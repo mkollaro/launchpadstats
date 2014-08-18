@@ -11,12 +11,30 @@
 # limitations under the License.
 
 import json
+import argparse
+import sys
+
 import stackalyticscli
 
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Get Stackalytics data.")
+    parser.add_argument('-c','--config',
+                        help="Configuration file, by default use 'config.ini'"
+                        " in the project directory")
+    args = vars(parser.parse_args())
+    return args
+
+
 def main():
-    config = stackalyticscli.get_config()
-    stats = stackalyticscli.get_stats(config)
-    print json.dumps(stats, indent=4)
+    try:
+        args = parse_args()
+        config = stackalyticscli.get_config(args['config'])
+        stats = stackalyticscli.get_stats(config)
+        print json.dumps(stats, indent=4)
+    except Exception, e:
+        print e
+        sys.exit(1)
 
 
 main()
