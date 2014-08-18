@@ -22,19 +22,8 @@ LOG = logging.getLogger('stackalyticscli')
 URL = 'http://stackalytics.com/api/1.0/'
 
 
-def get_stats(config):
-    params = dict(config.items('DEFAULT'))
-
+def get_stats(params):
     r = requests.get(URL + 'contribution', params=params)
     LOG.info(r.url)
+    r.raise_for_status()
     return r.json()
-
-
-def main():
-    config = get_config()
-    stats = get_stats(config)
-    print json.dumps(stats, indent=4)
-
-
-if __name__ == '__main__':
-    main()

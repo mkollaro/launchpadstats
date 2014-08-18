@@ -11,26 +11,63 @@
 # limitations under the License.
 
 import json
+import logging
 import argparse
 import sys
 
 import stackalyticscli
 
 
+logging.basicConfig()
+LOG = logging.getLogger('stackalyticscli')
+
+# options passed as parameters to the request
+OPTIONS = ['release', 'project_type', 'company', 'user_id']
+
 def parse_args():
-    parser = argparse.ArgumentParser(description="Get Stackalytics data.")
+    parser = argparse.ArgumentParser(description="Get Stackalytics data. The"
+            " command line options take precedence over the options given in"
+            " the configuration file.")
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help="Show logging output")
     parser.add_argument('-c','--config',
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory")
+    parser.add_argument('--release',
+                        help="Project release, e.g. havana.")
+    parser.add_argument('--project_type',
+                        help="Project we are interested in, e.g. OpenStack.")
     args = vars(parser.parse_args())
     return args
+
+
+def merge_config_and_args(config, args, config_section='DEFAULT'):
+    """Merge the options given in the configuration file and the CLI args.
+
+    The CLI args take precedence over the config file options, if specified.
+    :returns: a dictionary of (option, value) pairs that will be used as
+        parameters for the stackalytics query)
+    """
+    params = dict()
+    if config:
+        params = dict(config.items(config_section))
+
+    for option in OPTIONS:
+        if option in args and args[option]:
+            params[option] = args[option]
+    LOG.info("Using parameters: %s", params)
+    return params
 
 
 def main():
     try:
         args = parse_args()
+        if args['verbose']:
+            LOG.setLevel(logging.INFO)
         config = stackalyticscli.get_config(args['config'])
-        stats = stackalyticscli.get_stats(config)
+        params = merge_config_and_args(config, args)
+
+        stats = stackalyticscli.get_stats(params)
         print json.dumps(stats, indent=4)
     except Exception, e:
         print e
