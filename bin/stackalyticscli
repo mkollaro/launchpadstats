@@ -37,6 +37,9 @@ def parse_args():
                         help="Project release, e.g. havana.")
     parser.add_argument('--project_type',
                         help="Project we are interested in, e.g. OpenStack.")
+    parser.add_argument('--user_id',
+                        help="Usernames of people you are interested in,"
+                        " separated by commas")
     args = vars(parser.parse_args())
     return args
 
