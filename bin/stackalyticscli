@@ -14,6 +14,7 @@ import json
 import logging
 import argparse
 import sys
+import traceback
 
 import stackalyticscli
 
@@ -21,59 +22,56 @@ import stackalyticscli
 logging.basicConfig()
 LOG = logging.getLogger('stackalyticscli')
 
-# options passed as parameters to the request
-OPTIONS = ['release', 'project_type', 'company', 'user_id']
+# default parameters that are given to the stackalytics request, can be
+# overwritten in the configuration file
+DEFAULTS = {
+    'project_type': 'OpenStack',
+    'company': 'Red Hat',
+    'release': 'all',
+}
+
+TABLES = ['group-summary', 'per-user-summary']
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Get Stackalytics data. The"
-            " command line options take precedence over the options given in"
-            " the configuration file.")
+    parser = argparse.ArgumentParser(description="Get Stackalytics data and"
+        " create various types of tables out of them.")
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="Show logging output")
     parser.add_argument('-c','--config',
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory")
-    parser.add_argument('--release',
-                        help="Project release, e.g. havana.")
-    parser.add_argument('--project_type',
-                        help="Project we are interested in, e.g. OpenStack.")
-    parser.add_argument('--user_id',
-                        help="Usernames of people you are interested in,"
-                        " separated by commas")
+    parser.add_argument('-t', '--table-type', choices=TABLES, required=True,
+                        help="Which table type to generate")
+    parser.add_argument('-n', '--table-name', default='DEFAULT',
+                        help="Which section name in the config file to use,"
+                        " the default value is 'DEFAULT'")
     args = vars(parser.parse_args())
     return args
 
 
-def merge_config_and_args(config, args, config_section='DEFAULT'):
-    """Merge the options given in the configuration file and the CLI args.
-
-    The CLI args take precedence over the config file options, if specified.
-    :returns: a dictionary of (option, value) pairs that will be used as
-        parameters for the stackalytics query)
+def get_parameters(config, config_section):
+    """Merge the default values with the options in the correct config section.
     """
-    params = dict()
-    if config:
-        params = dict(config.items(config_section))
-
-    for option in OPTIONS:
-        if option in args and args[option]:
-            params[option] = args[option]
+    config_params = dict(config.items(config_section))
+    params = dict(DEFAULTS.items() + config_params.items())
     LOG.info("Using parameters: %s", params)
     return params
 
 
 def main():
+    args = parse_args()
+    if args['verbose']:
+        LOG.setLevel(logging.INFO)
     try:
-        args = parse_args()
-        if args['verbose']:
-            LOG.setLevel(logging.INFO)
         config = stackalyticscli.get_config(args['config'])
-        params = merge_config_and_args(config, args)
+        params = get_parameters(config, args['table_name'])
 
         stats = stackalyticscli.get_stats(params)
         print json.dumps(stats, indent=4)
     except Exception, e:
         print e
+        if args['verbose']:
+            traceback.print_exc()
         sys.exit(1)
 
 
