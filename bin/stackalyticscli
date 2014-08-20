@@ -33,13 +33,21 @@ def parse_args():
     parser.add_argument('-c','--config',
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory")
-    parser.add_argument('-t', '--table-type', choices=TABLES, required=True,
-                        help="Which table type to generate")
     parser.add_argument('-n', '--table-name', default='DEFAULT',
                         help="Which section name in the config file to use,"
                         " the default value is 'DEFAULT'")
     args = vars(parser.parse_args())
     return args
+
+
+def get_table(params):
+    table_type = params.get('table-type', 'group-metrics')
+    if table_type == 'group-metrics':
+        return stackalyticscli.GroupMetricsTable(**params)
+    elif table_type == 'user-metrics':
+        return stackalyticscli.UserMetricsTable(**params)
+    else:
+        raise Exception("Unknown table type '%s'" % table_type)
 
 
 def main():
@@ -50,7 +58,7 @@ def main():
         config = stackalyticscli.get_config(args['config'])
         params = dict(config.items(args['table_name']))
 
-        table = stackalyticscli.UserMetricsTable(**params)
+        table = get_table(params)
         table.generate()
         print table.csv()
 
