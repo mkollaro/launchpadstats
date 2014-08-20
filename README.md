@@ -47,3 +47,46 @@ For more information, look into the `config.ini` table.
       -t TABLE_NAME, --table-name TABLE_NAME
                             Which section name in the config file to use, the
                             default value is 'DEFAULT'
+
+## Configuration
+
+Look into `config.ini` for an example.
+
+### Table types
+Currently implemented table types are *group-metrics* and *user-metrics*, which
+you can specify in the `table-type` option.
+
+* `group-metrics` -
+Show the metrics of the group per release in columns. The *group* is defined as
+the list of people passed in the `people` option.
+One metric per line is shown, releases are columns.
+Shows a sum of the metrics per release.
+
+* `user-metrics` -
+For each person in the `people` option, display a line with their
+metrics (given in the `metrics` option), summed up in all the releases
+specified in `releases`.
+
+
+### Possible metrics
+These are the values you can give to the option `metrics`.
+
+* `email_count`
+* `loc` - lines of code
+* `commit_count`
+* `drafted_blueprint_count`
+* `completed_blueprint_count`
+* `reviews` - shows in the format (-2, -1, +1, +2, A)
+* `filed_bug_count`
+* `resolved_bug_count`
+* `patch_set_count`
+
+### Other options
+* option `people` - list of user IDs, which should be the same as the `user_id`
+  parameter on the Stackalytics webpage, i.e.
+  `http://stackalytics.com/?user_id=username`
+* option `releases` - list of OpenStack releases, in lower case
+  (e.g. havana,icehouse,juno,..)
+
+The options given in the `DEFAULT` section can be used as short-cuts in other
+options.

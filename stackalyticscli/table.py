@@ -147,8 +147,7 @@ class UserMetricsTable(Table):
 
     For each person in the 'people' parameter, display a line with their
     metrics (given in the 'metrics' param), summed up in all the releases
-    specified in the 'releases' param. At the end of the line, show a sum of
-    the metrics
+    specified in the 'releases' param.
     """
     header_info = "user/metric"
     _flip = True
