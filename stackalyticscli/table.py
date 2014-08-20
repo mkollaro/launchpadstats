@@ -21,7 +21,7 @@ LOG = logging.getLogger('stackalyticscli')
 
 class Table(object):
     header_info = ""
-    _flipped = False
+    _flip = False
 
     def __init__(self, people, releases, metrics, **kwargs):
         self.people = _split(people)
@@ -45,17 +45,21 @@ class Table(object):
         return self._data
 
     def csv(self):
-        # print header
-        result = self.header_info + ', '
+        # header (or first collumn if it gets flipped)
         header = self._data.keys()
-        result += ', '.join(header) + '\n'
+        row = [self.header_info] + header
+        result = [row]
         # print data
         for metric in self.metrics + ['sum']:
-            line = [metric]
+            row = [metric]
             for item in header:
-                line.append(str(self._data[item][metric]))
-            result += ', '.join(line) + '\n'
-        return result
+                row.append(str(self._data[item][metric]))
+            result.append(row)
+        if self._flip:
+            # transpose the matrix
+            result = zip(*result)
+        result_str = '\n'.join([', '.join(row) for row in result])
+        return result_str
 
 
 class GroupMetricsTable(Table):
@@ -72,7 +76,7 @@ class GroupMetricsTable(Table):
 
 class UserMetricsTable(Table):
     header_info = "user/metric"
-    _flipped = True
+    _flip = True
 
     def generate(self):
         for person in self.people:
