@@ -18,6 +18,8 @@ from stackalyticscli import get_stats
 
 LOG = logging.getLogger('stackalyticscli')
 
+CSV_SEPARATOR = '; '
+
 
 class Table(object):
     """Base class for the table generators.
@@ -71,14 +73,17 @@ class Table(object):
         result = [row]
         # print data
         for metric in self.metrics + ['sum']:
-            row = [metric]
+            if metric == 'sum' and 'sum' not in self._data[item]:
+                continue
+            row = [self._prettify_metric(metric)]
             for item in header:
-                row.append(str(self._data[item][metric]))
+                row.append(self._prettify_data(self._data[item], metric))
             result.append(row)
+
         if self._flip:
             # transpose the matrix
             result = zip(*result)
-        result_str = '\n'.join([', '.join(row) for row in result])
+        result_str = '\n'.join([CSV_SEPARATOR.join(row) for row in result])
         return result_str
 
     def _add_metrics_sum(self):
@@ -92,6 +97,21 @@ class Table(object):
                 if metric in self.metrics:
                     total += value
             self._data[key]['sum'] = total
+
+    def _prettify_metric(self, metric):
+        if metric == 'reviews':
+            return 'reviews (-2, -1, +1, +2, A)'
+        else:
+            return metric
+
+    def _prettify_data(self, data, metric):
+        if metric == 'reviews':
+            marks = data['marks']
+            result = [str(marks[i]) for i in ['-2', '-1', '1', '2', 'A']]
+            result = '(' + ', '.join(result) + ')'
+        else:
+            result = str(data[metric])
+        return result
 
 
 class GroupMetricsTable(Table):
@@ -128,7 +148,6 @@ class UserMetricsTable(Table):
             params = {'release': ','.join(self.releases), 'user_id': person}
             stats = get_stats(params)
             self._data[person] = stats['contribution']
-        self._add_metrics_sum()
         LOG.info(json.dumps(self._data, indent=4))
 
 
