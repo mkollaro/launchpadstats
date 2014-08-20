@@ -63,7 +63,7 @@ def main():
         print table.csv()
 
     except Exception, e:
-        print e
+        print "%s: %s" % (type(e).__name__, e)
         if args['verbose']:
             traceback.print_exc()
         sys.exit(1)
