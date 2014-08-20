@@ -50,7 +50,7 @@ def main():
         config = stackalyticscli.get_config(args['config'])
         params = dict(config.items(args['table_name']))
 
-        table = stackalyticscli.Table(**params)
+        table = stackalyticscli.UserMetricsTable(**params)
         table.generate()
         print table.csv()
 

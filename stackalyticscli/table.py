@@ -20,7 +20,8 @@ LOG = logging.getLogger('stackalyticscli')
 
 
 class Table(object):
-    header_info = 'metric/release'
+    header_info = ""
+    _flipped = False
 
     def __init__(self, people, releases, metrics, **kwargs):
         self.people = _split(people)
@@ -29,12 +30,7 @@ class Table(object):
         self._data = dict()
 
     def generate(self):
-        for release in self.releases:
-            params = {'release': release, 'user_id': ','.join(self.people)}
-            stats = get_stats(params)
-            self._data[release] = stats['contribution']
-        self._add_metrics_sum()
-        LOG.info(json.dumps(self._data, indent=4))
+        raise NotImplementedError("Method 'generate' is abstract")
 
     def _add_metrics_sum(self):
         """Add up the fields in 'self.metrics' and save them under 'sum'"""
@@ -60,6 +56,31 @@ class Table(object):
                 line.append(str(self._data[item][metric]))
             result += ', '.join(line) + '\n'
         return result
+
+
+class GroupMetricsTable(Table):
+    header_info = 'metric/release'
+
+    def generate(self):
+        for release in self.releases:
+            params = {'release': release, 'user_id': ','.join(self.people)}
+            stats = get_stats(params)
+            self._data[release] = stats['contribution']
+        self._add_metrics_sum()
+        LOG.info(json.dumps(self._data, indent=4))
+
+
+class UserMetricsTable(Table):
+    header_info = "user/metric"
+    _flipped = True
+
+    def generate(self):
+        for person in self.people:
+            params = {'release': ','.join(self.releases), 'user_id': person}
+            stats = get_stats(params)
+            self._data[person] = stats['contribution']
+        self._add_metrics_sum()
+        LOG.info(json.dumps(self._data, indent=4))
 
 
 def _split(maybe_string):
