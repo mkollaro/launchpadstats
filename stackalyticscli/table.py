@@ -18,7 +18,10 @@ from stackalyticscli import get_stats
 
 LOG = logging.getLogger('stackalyticscli')
 
+# characters used as separator between items in the CSV output
 CSV_SEPARATOR = '; '
+# which metrics should be skipped when a sum is made of the metrics
+SKIP_FROM_SUM = ['marks', 'loc']
 
 
 class Table(object):
@@ -65,7 +68,8 @@ class Table(object):
         The first item on the top left is going to be the `self.header_info`
         with the description of what the columns and rows are.
         If `self._flip` is True, flip the table (transpose it), i.e. swap the
-        columns and the rows.
+        columns and the rows. The output will use `CSV_SEPARATOR` as the
+        delimiter.
         """
         # header (or first collumn if it gets flipped)
         header = self._data.keys()
@@ -87,24 +91,30 @@ class Table(object):
         return result_str
 
     def _add_metrics_sum(self):
-        """Add up the fields in 'self.metrics'.
+        """Add up the fields in `self.metrics`.
 
+        Skip the items in `SKIP_FROM_SUM` even if they are given in
+        `self.metrics`, e.g. the review marks.
         The result should be saved in the `self._data[item]['sum']`. It will be
         printed in the CSV representation."""
         for key, metrics in self._data.iteritems():
             total = 0
             for metric, value in metrics.iteritems():
-                if metric in self.metrics:
+                if metric in self.metrics and metric not in SKIP_FROM_SUM:
                     total += value
             self._data[key]['sum'] = total
 
     def _prettify_metric(self, metric):
+        """Change the names of some metrics to something more readable.
+        """
         if metric == 'reviews':
             return 'reviews (-2, -1, +1, +2, A)'
         else:
             return metric
 
     def _prettify_data(self, data, metric):
+        """Change some data (e.g. review marks) into something more readable.
+        """
         if metric == 'reviews':
             marks = data['marks']
             result = [str(marks[i]) for i in ['-2', '-1', '1', '2', 'A']]
