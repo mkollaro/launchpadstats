@@ -8,7 +8,10 @@ Each section in the configuration file corresponds to a table name, which can
 have a certain table type and overwrite the default values. Currently
 implemented table types are *group-metrics* and *user-metrics*.
 
-Example with the *group-metrics* table type:
+## Examples:
+
+With the *group-metrics* table type (specified in the default `config.ini`
+file):
 
     $ stackalyticscli --table-name group-summary
     metric/release; havana; juno; icehouse
@@ -25,3 +28,22 @@ Example with the *user-metrics* table type:
     mkollaro; 1; 0; 3; 1; 9; (0, 6, 12, 0, 0)
     psedlak; 0; 1; 0; 0; 9; (0, 9, 19, 0, 0)
     afazekas; 1; 0; 48; 8; 82; (2, 57, 83, 439, 66)
+
+
+## Usage
+
+For more information, look into the `config.ini` table.
+
+    usage: stackalyticscli [-h] [-v] [-c CONFIG] [-t TABLE_NAME]
+
+    Get Stackalytics data and create various types of tables out of them.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -v, --verbose         Show logging output
+      -c CONFIG, --config CONFIG
+                            Configuration file, by default use 'config.ini' in the
+                            project directory
+      -t TABLE_NAME, --table-name TABLE_NAME
+                            Which section name in the config file to use, the
+                            default value is 'DEFAULT'
