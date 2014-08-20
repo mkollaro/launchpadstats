@@ -25,6 +25,14 @@ PROJECT_TYPE = 'OpenStack'
 
 
 def get_stats(params):
+    """Query Stackalytics 'contribution' module with `params`.
+
+    :param params: a dictionary of data passed to the 'contribution' module,
+        e.g. 'user_id', 'release', 'company'. If 'company' is not specified,
+        use `COMPANY`, if 'project_type' is not specified, use 'OpenStack'.
+        The values can contain more items seprated by commas, e.g.
+        `{'user_id': 'user1,user2,user3'}`.
+    """
     params = dict(params)
     if 'company' not in params:
         params['company'] = COMPANY
