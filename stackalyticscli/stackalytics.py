@@ -20,9 +20,18 @@ LOG = logging.getLogger('stackalyticscli')
 
 
 URL = 'http://stackalytics.com/api/1.0/'
+COMPANY = 'Red Hat'
+PROJECT_TYPE = 'OpenStack'
 
 
 def get_stats(params):
+    params = dict(params)
+    if 'company' not in params:
+        params['company'] = COMPANY
+    if 'project_type' not in params:
+        params['project_type'] = PROJECT_TYPE
+
+    LOG.info("Using parameters: %s", params)
     r = requests.get(URL + 'contribution', params=params)
     LOG.info(r.url)
     r.raise_for_status()

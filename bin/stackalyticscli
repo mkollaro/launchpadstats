@@ -22,13 +22,6 @@ import stackalyticscli
 logging.basicConfig()
 LOG = logging.getLogger('stackalyticscli')
 
-# default parameters that are given to the stackalytics request, can be
-# overwritten in the configuration file
-DEFAULTS = {
-    'project_type': 'OpenStack',
-    'company': 'Red Hat',
-    'release': 'all',
-}
 
 TABLES = ['group-summary', 'per-user-summary']
 
@@ -49,25 +42,18 @@ def parse_args():
     return args
 
 
-def get_parameters(config, config_section):
-    """Merge the default values with the options in the correct config section.
-    """
-    config_params = dict(config.items(config_section))
-    params = dict(DEFAULTS.items() + config_params.items())
-    LOG.info("Using parameters: %s", params)
-    return params
-
-
 def main():
     args = parse_args()
     if args['verbose']:
         LOG.setLevel(logging.INFO)
     try:
         config = stackalyticscli.get_config(args['config'])
-        params = get_parameters(config, args['table_name'])
+        params = dict(config.items(args['table_name']))
 
-        stats = stackalyticscli.get_stats(params)
-        print json.dumps(stats, indent=4)
+        table = stackalyticscli.Table(**params)
+        table.generate()
+        print table.csv()
+
     except Exception, e:
         print e
         if args['verbose']:
