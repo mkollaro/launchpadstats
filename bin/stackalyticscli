@@ -33,7 +33,7 @@ def parse_args():
     parser.add_argument('-c','--config',
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory")
-    parser.add_argument('-n', '--table-name', default='DEFAULT',
+    parser.add_argument('-t', '--table-name', default='DEFAULT',
                         help="Which section name in the config file to use,"
                         " the default value is 'DEFAULT'")
     args = vars(parser.parse_args())
