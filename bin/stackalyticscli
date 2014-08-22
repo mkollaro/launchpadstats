@@ -33,16 +33,16 @@ def parse_args():
                                                  " create various types of"
                                                  " tables out of them.")
     parser.add_argument('-v', '--verbose', action='store_true',
-                        help="Show logging output")
+                        help="Show logging output.")
     parser.add_argument('-c', '--config',
                         help="Configuration file, by default use 'config.ini'"
-                        " in the project directory")
+                        " in the project directory.")
     parser.add_argument('-t', '--table-name', default='DEFAULT',
                         help="Which section name in the config file to use,"
-                        " the default value is 'DEFAULT'")
+                        " the default value is 'DEFAULT'.")
     parser.add_argument('--output-format', default='csv',
                         choices=['csv', 'html'],
-                        help="What output format to use. Default is 'csv'")
+                        help="What output format to use. Default is 'csv'.")
     args = vars(parser.parse_args())
     return args
 
