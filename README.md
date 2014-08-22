@@ -5,8 +5,9 @@ Get the [Launchpad](https://launchpad.net/) statistics trough
 [Stackalytics](http://stackalytics.com/) and create CSV or HTML tables out of
 them. The CSV output uses `;` as a delimiter.
 
-Each section in the configuration file corresponds to a table name, which can
-have a certain table type and overwrite the default values. Currently
+Each section in the configuration file corresponds to a table name - the name
+can be anything and does not have any effect on the table structure.
+A table can have a certain type and overwrite the default values. Currently
 implemented table types are *group-metrics* and *user-metrics*.
 
 ## Examples:
@@ -14,7 +15,7 @@ implemented table types are *group-metrics* and *user-metrics*.
 With the *group-metrics* table type (specified in the default `config.ini`
 file):
 
-    $ launchpadstats --table-name group-summary
+    $ launchpadstats --table-name tableA
     metric/release; havana; juno; icehouse
     drafted_blueprint_count; 2; 1; 0
     completed_blueprint_count; 1; 1; 1
@@ -97,6 +98,9 @@ These are the values you can give to the option `metrics`.
   `http://stackalytics.com/?user_id=username`
 * option `releases` - list of OpenStack releases, in lower case
   (e.g. havana,icehouse,juno,..)
+* option `description` - shown in the output of `launchpadstats-all`, as a
+  header of the table (if not specified, the table name, i.e. section name will
+  be used)
 
 The options given in the `DEFAULT` section can be used as short-cuts in other
 options.
