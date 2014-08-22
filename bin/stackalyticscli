@@ -40,6 +40,9 @@ def parse_args():
     parser.add_argument('-t', '--table-name', default='DEFAULT',
                         help="Which section name in the config file to use,"
                         " the default value is 'DEFAULT'")
+    parser.add_argument('--output-format', default='csv',
+                        choices=['csv', 'html'],
+                        help="What output format to use. Default is 'csv'")
     args = vars(parser.parse_args())
     return args
 
@@ -64,7 +67,10 @@ def main():
 
         table = get_table(params)
         table.generate()
-        print table.csv()
+        if args['output_format'] == 'html':
+            print table.html()
+        else:
+            print table.csv()
 
     except Exception, e:
         print "%s: %s" % (type(e).__name__, e)

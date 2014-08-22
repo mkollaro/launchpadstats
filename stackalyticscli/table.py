@@ -62,6 +62,9 @@ class Table(object):
     def generate(self):
         """Do a set of queries on stackalysis and save the data.
 
+        If `self._flip` is True, the matrix of data will be flipped
+        (transposed), i.e. the the columns and rows will be swapped.
+
         The queries depend on what kind of table we need to generate.
         The result should be saved in `self._data`.
         """
@@ -76,11 +79,24 @@ class Table(object):
 
         The first item on the top left is going to be the `self.header_info`
         with the description of what the columns and rows are.
-        If `self._flip` is True, flip the table (transpose it), i.e. swap the
-        columns and the rows.
+
         :param delimiter: use to separate items
         """
         return '\n'.join([delimiter.join(line) for line in self._data_matrix])
+
+    def html(self):
+        """Return a string with an HTML representation of the data.
+
+        The first item on the top left is going to be the `self.header_info`
+        with the description of what the columns and rows are.
+        """
+        result = '<table>\n'
+        for row in self._data_matrix:
+            result += '<tr>\n    <td>'
+            result += '</td>\n    <td>'.join(row)
+            result += '</td>\n</tr>\n'
+        result += '</table>'
+        return result
 
     def _parse_data(self):
         self._add_metrics_sum()
