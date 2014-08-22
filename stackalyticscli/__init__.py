@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from stackalyticscli.stackalytics import get_stats
+from stackalyticscli.stackalytics import get_stats, STACKALYTICS_URL
 from stackalyticscli.configuration import get_config
 from stackalyticscli.table import Table, GroupMetricsTable, UserMetricsTable
 
-__all__ = [get_stats, get_config, Table, GroupMetricsTable, UserMetricsTable]
+
+__all__ = [get_stats, STACKALYTICS_URL,
+           get_config,
+           Table, GroupMetricsTable, UserMetricsTable]

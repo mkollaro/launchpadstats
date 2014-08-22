@@ -17,9 +17,10 @@ import logging
 import json
 import abc
 
-from stackalyticscli import get_stats
+import stackalyticscli
 
 LOG = logging.getLogger('stackalyticscli')
+
 
 # characters used as separator between items in the CSV output
 CSV_SEPARATOR = '; '
@@ -90,13 +91,7 @@ class Table(object):
         The first item on the top left is going to be the `self.header_info`
         with the description of what the columns and rows are.
         """
-        result = '<table>\n'
-        for row in self._data_matrix:
-            result += '<tr>\n    <td>'
-            result += '</td>\n    <td>'.join(row)
-            result += '</td>\n</tr>\n'
-        result += '</table>'
-        return result
+        return _get_html_table(self._data_matrix)
 
     def _parse_data(self):
         self._add_metrics_sum()
@@ -167,7 +162,7 @@ class GroupMetricsTable(Table):
     def generate(self):
         for release in self.releases:
             params = {'release': release, 'user_id': ','.join(self.people)}
-            stats = get_stats(params)
+            stats = stackalyticscli.get_stats(params)
             self._data[release] = stats['contribution']
         self._parse_data()
 
@@ -185,6 +180,28 @@ class UserMetricsTable(Table):
     def generate(self):
         for person in self.people:
             params = {'release': ','.join(self.releases), 'user_id': person}
-            stats = get_stats(params)
+            stats = stackalyticscli.get_stats(params)
             self._data[person] = stats['contribution']
         self._parse_data()
+
+    def html(self):
+        """Generate HTML representation and add links to users."""
+        new_matrix = [self._data_matrix[0]]
+        for row in self._data_matrix[1:]:
+            row = list(row)
+            user = row[0]
+            row[0] = '<a href=%s?user_id=%s&release=%s>%s</a>' \
+                     % (stackalyticscli.STACKALYTICS_URL,
+                        user, ','.join(self.releases), user)
+            new_matrix.append(row)
+        return _get_html_table(new_matrix)
+
+
+def _get_html_table(matrix):
+    result = '<table>\n'
+    for row in matrix:
+        result += '<tr>\n    <td>'
+        result += '</td>\n    <td>'.join(row)
+        result += '</td>\n</tr>\n'
+    result += '</table>'
+    return result

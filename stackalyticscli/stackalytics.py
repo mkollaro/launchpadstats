@@ -19,7 +19,7 @@ import logging
 LOG = logging.getLogger('stackalyticscli')
 
 
-URL = 'http://stackalytics.com/api/1.0/'
+STACKALYTICS_URL = 'http://stackalytics.com/'
 COMPANY = 'Red Hat'
 PROJECT_TYPE = 'OpenStack'
 
@@ -33,6 +33,7 @@ def get_stats(params):
         The values can contain more items seprated by commas, e.g.
         `{'user_id': 'user1,user2,user3'}`.
     """
+    MODULE = 'api/1.0/contribution'
     params = dict(params)
     if 'company' not in params:
         params['company'] = COMPANY
@@ -40,7 +41,7 @@ def get_stats(params):
         params['project_type'] = PROJECT_TYPE
 
     LOG.info("Using parameters: %s", params)
-    r = requests.get(URL + 'contribution', params=params)
+    r = requests.get(STACKALYTICS_URL + MODULE, params=params)
     LOG.info(r.url)
     r.raise_for_status()
     return r.json()
