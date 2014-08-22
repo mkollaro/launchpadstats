@@ -13,6 +13,7 @@
 
 import logging
 import json
+import abc
 
 from stackalyticscli import get_stats
 
@@ -27,6 +28,8 @@ SKIP_FROM_SUM = ['marks', 'loc']
 class Table(object):
     """Base class for the table generators.
     """
+    __metaclass__ = abc.ABCMeta
+
     # will be shown on the top left corner, change it in specific
     # implementation of the table
     header_info = "column/row"
@@ -51,28 +54,35 @@ class Table(object):
         self.releases = releases.split(',')
         self.metrics = metrics.split(',')
         self._data = dict()
+        self._data_matrix = list()
 
+    @abc.abstractmethod
     def generate(self):
         """Do a set of queries on stackalysis and save the data.
 
         The queries depend on what kind of table we need to generate.
         The result should be saved in `self._data`.
         """
-        raise NotImplementedError("Method 'generate' is abstract")
+        pass
 
     def json(self):
         """Return the JSON raw data, with all the metrics"""
         return self._data
 
-    def csv(self):
+    def csv(self, delimiter=CSV_SEPARATOR):
         """Return a string with a CSV representation of the data.
 
         The first item on the top left is going to be the `self.header_info`
         with the description of what the columns and rows are.
         If `self._flip` is True, flip the table (transpose it), i.e. swap the
-        columns and the rows. The output will use `CSV_SEPARATOR` as the
-        delimiter.
+        columns and the rows.
+        :param delimiter: use to separate items
         """
+        return '\n'.join([delimiter.join(line) for line in self._data_matrix])
+
+    def _parse_data(self):
+        self._add_metrics_sum()
+        LOG.info(json.dumps(self._data, indent=4))
         # header (or first collumn if it gets flipped)
         header = self._data.keys()
         row = [self.header_info] + header
@@ -90,8 +100,7 @@ class Table(object):
         if self._flip:
             # transpose the matrix
             result = zip(*result)
-        result_str = '\n'.join([CSV_SEPARATOR.join(line) for line in result])
-        return result_str
+        self._data_matrix = result
 
     def _add_metrics_sum(self):
         """Add up the fields in `self.metrics`.
@@ -142,8 +151,7 @@ class GroupMetricsTable(Table):
             params = {'release': release, 'user_id': ','.join(self.people)}
             stats = get_stats(params)
             self._data[release] = stats['contribution']
-        self._add_metrics_sum()
-        LOG.info(json.dumps(self._data, indent=4))
+        self._parse_data()
 
 
 class UserMetricsTable(Table):
@@ -161,4 +169,4 @@ class UserMetricsTable(Table):
             params = {'release': ','.join(self.releases), 'user_id': person}
             stats = get_stats(params)
             self._data[person] = stats['contribution']
-        LOG.info(json.dumps(self._data, indent=4))
+        self._parse_data()
