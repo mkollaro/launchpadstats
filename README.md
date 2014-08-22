@@ -47,6 +47,8 @@ For more information, look into the `config.ini` table.
       -t TABLE_NAME, --table-name TABLE_NAME
                             Which section name in the config file to use, the
                             default value is 'DEFAULT'
+      --output-format {csv,html}
+                            What output format to use. Default is 'csv'.
 
 ## Configuration
 
