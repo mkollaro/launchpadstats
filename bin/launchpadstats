@@ -24,14 +24,14 @@ import launchpadstats
 logging.basicConfig()
 LOG = logging.getLogger('launchpadstats')
 
+DESCRIPTION = "Get Launchpad statistics trough Stackalytics and create" \
+              " various types of tables out of them."
 
 TABLES = ['group-summary', 'per-user-summary']
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Get Stackalytics data and"
-                                                 " create various types of"
-                                                 " tables out of them.")
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="Show logging output.")
     parser.add_argument('-c', '--config',

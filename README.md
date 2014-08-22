@@ -1,8 +1,8 @@
-Stackalytics CLI
-================
+Launchpad Stats
+===============
 
-Get the Stackalytics data and create CSV or HTML tables out of them. The CSV
-output uses `;` as a delimiter.
+Get the Launchpad statisctics trough Stackalytics and create CSV or HTML
+tables out of them. The CSV output uses `;` as a delimiter.
 
 Each section in the configuration file corresponds to a table name, which can
 have a certain table type and overwrite the default values. Currently
