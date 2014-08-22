@@ -11,10 +11,8 @@
 # limitations under the License.
 
 import requests
-import json
 import logging
 
-from stackalyticscli.configuration import get_config
 
 LOG = logging.getLogger('stackalyticscli')
 

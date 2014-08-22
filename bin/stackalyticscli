@@ -10,7 +10,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import logging
 import argparse
 import sys
@@ -25,12 +24,14 @@ LOG = logging.getLogger('stackalyticscli')
 
 TABLES = ['group-summary', 'per-user-summary']
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Get Stackalytics data and"
-        " create various types of tables out of them.")
+                                                 " create various types of"
+                                                 " tables out of them.")
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="Show logging output")
-    parser.add_argument('-c','--config',
+    parser.add_argument('-c', '--config',
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory")
     parser.add_argument('-t', '--table-name', default='DEFAULT',

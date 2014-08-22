@@ -33,6 +33,8 @@ class Table(object):
     # if True, it will flip the rows and columns in the CSV representation
     # (transpose the matrix)
     _flip = False
+    # show the total of the data at the end of the table
+    _show_sum = False
 
     def __init__(self, people, releases, metrics, **kwargs):
         """Set filters for the queries.
@@ -77,7 +79,8 @@ class Table(object):
         result = [row]
         # print data
         for metric in self.metrics + ['sum']:
-            if metric == 'sum' and 'sum' not in self._data[item]:
+            if metric == 'sum' and not self._show_sum:
+                # don't show the sum if it's not in the data
                 continue
             row = [self._prettify_metric(metric)]
             for item in header:
@@ -87,7 +90,7 @@ class Table(object):
         if self._flip:
             # transpose the matrix
             result = zip(*result)
-        result_str = '\n'.join([CSV_SEPARATOR.join(row) for row in result])
+        result_str = '\n'.join([CSV_SEPARATOR.join(line) for line in result])
         return result_str
 
     def _add_metrics_sum(self):
@@ -132,6 +135,7 @@ class GroupMetricsTable(Table):
     of the metrics per release.
     """
     header_info = 'metric/release'
+    _show_sum = True
 
     def generate(self):
         for release in self.releases:
