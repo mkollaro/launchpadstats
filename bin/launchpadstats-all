@@ -24,8 +24,10 @@ import launchpadstats
 logging.basicConfig()
 LOG = logging.getLogger('launchpadstats')
 
-DESCRIPTION = "Get Launchpad statistics trough Stackalytics and create" \
-              " various types of tables out of them."
+DESCRIPTION = ("Get Launchpad statistics trough Stackalytics and create"
+               " various types of tables out of them. Generate all the tables"
+               " in the config file, where each section corresponds to a"
+               " table, and output them as a single HTML page.")
 
 
 def parse_args():
@@ -35,12 +37,6 @@ def parse_args():
     parser.add_argument('-c', '--config',
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory.")
-    parser.add_argument('-t', '--table-name', default='DEFAULT',
-                        help="Which section name in the config file to use,"
-                        " the default value is 'DEFAULT'.")
-    parser.add_argument('--output-format', default='csv',
-                        choices=['csv', 'html'],
-                        help="What output format to use. Default is 'csv'.")
     args = vars(parser.parse_args())
     return args
 
@@ -51,15 +47,16 @@ def main():
         LOG.setLevel(logging.INFO)
     try:
         config = launchpadstats.get_config(args['config'])
-        params = dict(config.items(args['table_name']))
-        table_type = params.get('table-type')
 
-        table = launchpadstats.get_table(table_type, params)
-        table.generate()
-        if args['output_format'] == 'html':
+        print '<html>'
+        for section in config.sections():
+            params = dict(config.items(section))
+            table_type = params.get('table-type')
+            table = launchpadstats.get_table(table_type, params)
+            table.generate()
+            print '<h2>%s</h2>' % section
             print table.html()
-        else:
-            print table.csv()
+        print '</html>'
 
     except Exception, e:
         print "%s: %s" % (type(e).__name__, e)
