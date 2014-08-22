@@ -15,8 +15,9 @@
 from launchpadstats.stackalytics import get_stats, STACKALYTICS_URL
 from launchpadstats.configuration import get_config
 from launchpadstats.table import Table, GroupMetricsTable, UserMetricsTable
+from launchpadstats.table import get_table
 
 
 __all__ = [get_stats, STACKALYTICS_URL,
            get_config,
-           Table, GroupMetricsTable, UserMetricsTable]
+           get_table, Table, GroupMetricsTable, UserMetricsTable]

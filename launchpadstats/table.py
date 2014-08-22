@@ -197,6 +197,23 @@ class UserMetricsTable(Table):
         return _get_html_table(new_matrix)
 
 
+def get_table(table_type, params):
+    """Return the correct Table subclass based on table_type.
+
+    :param table_type: name of one of the implemented Table subclasses, e.g.
+        'group-metrics', 'user-metrics'. The 'group-metrics' type will be used
+        as default, if None is passed.
+    :param params: dictionary of parameters that will be passed to the init
+        method of the Table subclass
+    """
+    if table_type == 'group-metrics' or table_type is None:
+        return launchpadstats.GroupMetricsTable(**params)
+    elif table_type == 'user-metrics':
+        return launchpadstats.UserMetricsTable(**params)
+    else:
+        raise Exception("Unknown table type '%s'" % table_type)
+
+
 def _get_html_table(matrix):
     result = '<table>\n'
     for row in matrix:

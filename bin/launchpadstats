@@ -47,16 +47,6 @@ def parse_args():
     return args
 
 
-def get_table(params):
-    table_type = params.get('table-type', 'group-metrics')
-    if table_type == 'group-metrics':
-        return launchpadstats.GroupMetricsTable(**params)
-    elif table_type == 'user-metrics':
-        return launchpadstats.UserMetricsTable(**params)
-    else:
-        raise Exception("Unknown table type '%s'" % table_type)
-
-
 def main():
     args = parse_args()
     if args['verbose']:
@@ -64,8 +54,9 @@ def main():
     try:
         config = launchpadstats.get_config(args['config'])
         params = dict(config.items(args['table_name']))
+        table_type = params.get('table-type')
 
-        table = get_table(params)
+        table = launchpadstats.get_table(table_type, params)
         table.generate()
         if args['output_format'] == 'html':
             print table.html()
