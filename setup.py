@@ -26,7 +26,7 @@ setup(
     author='Martina Kollarova',
     author_email='mkollaro@gmail.com',
     url='https://github.com/mkollaro/launchpadstats',
-    packages=['launchpadstats'],
+    packages=['launchpadstats', 'launchpadstats-all'],
     license='Apache License, Version 2.0',
     scripts=['bin/launchpadstats'],
     description='Get data from Stackalytics trough the CLI.',
