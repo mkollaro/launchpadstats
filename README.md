@@ -30,6 +30,10 @@ Example with the *user-metrics* table type:
     psedlak; 0; 1; 0; 0; 9; (0, 9, 19, 0, 0)
     afazekas; 1; 0; 48; 8; 82; (2, 57, 83, 439, 66)
 
+Create a single HTML page with all the tables (each section is considered a
+table, except the section *DEFAULT*):
+
+    $ launchpadstats-all > everything.html
 
 ## Usage
 
@@ -50,6 +54,9 @@ For more information, look into the `config.ini` table.
                             default value is 'DEFAULT'
       --output-format {csv,html}
                             What output format to use. Default is 'csv'.
+
+The command `launchpadstats-all` is similar, but creates a single HTML page
+with all of the tables.
 
 ## Configuration
 
