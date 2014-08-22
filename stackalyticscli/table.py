@@ -39,17 +39,17 @@ class Table(object):
     def __init__(self, people, releases, metrics, **kwargs):
         """Set filters for the queries.
 
-        :param people: list or comma-separated string with list of user ids in
+        :param people: comma-separated string with list of user ids in
             stackalytics
-        :param releases: list or comma-separated string with list of OpenStack
+        :param releases: comma-separated string with list of OpenStack
             releases that will be passed as the 'release' parameter to the
             query
-        :param metrics: which metrics to show in the CSV table (and in some
-            cases, create a sum total of them)
+        :param metrics: comma-separated string with list of metrics to show in
+            the CSV table (and in some cases, create a sum total of them)
         """
-        self.people = _split(people)
-        self.releases = _split(releases)
-        self.metrics = _split(metrics)
+        self.people = people.split(',')
+        self.releases = releases.split(',')
+        self.metrics = metrics.split(',')
         self._data = dict()
 
     def generate(self):
@@ -162,11 +162,3 @@ class UserMetricsTable(Table):
             stats = get_stats(params)
             self._data[person] = stats['contribution']
         LOG.info(json.dumps(self._data, indent=4))
-
-
-def _split(maybe_string):
-    """If it's a string, split it by the comma char, otherwise just return"""
-    if isinstance(maybe_string, basestring):
-        return maybe_string.split(',')
-    else:
-        return maybe_string
