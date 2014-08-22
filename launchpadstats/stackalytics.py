@@ -16,7 +16,7 @@ import requests
 import logging
 
 
-LOG = logging.getLogger('stackalyticscli')
+LOG = logging.getLogger('launchpadstats')
 
 
 STACKALYTICS_URL = 'http://stackalytics.com/'

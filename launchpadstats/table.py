@@ -17,9 +17,9 @@ import logging
 import json
 import abc
 
-import stackalyticscli
+import launchpadstats
 
-LOG = logging.getLogger('stackalyticscli')
+LOG = logging.getLogger('launchpadstats')
 
 
 # characters used as separator between items in the CSV output
@@ -45,8 +45,8 @@ class Table(object):
     def __init__(self, people, releases, metrics, **kwargs):
         """Set filters for the queries.
 
-        :param people: comma-separated string with list of user ids in
-            stackalytics
+        :param people: comma-separated string with list of user IDs in
+            the stackalytics web page
         :param releases: comma-separated string with list of OpenStack
             releases that will be passed as the 'release' parameter to the
             query
@@ -162,7 +162,7 @@ class GroupMetricsTable(Table):
     def generate(self):
         for release in self.releases:
             params = {'release': release, 'user_id': ','.join(self.people)}
-            stats = stackalyticscli.get_stats(params)
+            stats = launchpadstats.get_stats(params)
             self._data[release] = stats['contribution']
         self._parse_data()
 
@@ -180,7 +180,7 @@ class UserMetricsTable(Table):
     def generate(self):
         for person in self.people:
             params = {'release': ','.join(self.releases), 'user_id': person}
-            stats = stackalyticscli.get_stats(params)
+            stats = launchpadstats.get_stats(params)
             self._data[person] = stats['contribution']
         self._parse_data()
 
@@ -191,7 +191,7 @@ class UserMetricsTable(Table):
             row = list(row)
             user = row[0]
             row[0] = '<a href=%s?user_id=%s&release=%s>%s</a>' \
-                     % (stackalyticscli.STACKALYTICS_URL,
+                     % (launchpadstats.STACKALYTICS_URL,
                         user, ','.join(self.releases), user)
             new_matrix.append(row)
         return _get_html_table(new_matrix)

@@ -19,14 +19,14 @@ import ConfigParser
 from os.path import dirname, join, normpath, isfile
 
 PROJ_DIR = normpath(join(dirname(__file__), ".."))
-LOG = logging.getLogger('stackalyticscli')
+LOG = logging.getLogger('launchpadstats')
 
 
 def get_config(filepath=None):
     """Read the .ini configuration file given in filepath.
 
-    If no filepath is given, try reading 'config.ini' in the stackalytiscli
-    project directory.
+    If no filepath is given, try reading 'config.ini' in the project directory.
+
     :returns: ConfigParser object
     """
     if not filepath:

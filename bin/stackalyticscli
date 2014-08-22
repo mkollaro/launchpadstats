@@ -18,11 +18,11 @@ import argparse
 import sys
 import traceback
 
-import stackalyticscli
+import launchpadstats
 
 
 logging.basicConfig()
-LOG = logging.getLogger('stackalyticscli')
+LOG = logging.getLogger('launchpadstats')
 
 
 TABLES = ['group-summary', 'per-user-summary']
@@ -50,9 +50,9 @@ def parse_args():
 def get_table(params):
     table_type = params.get('table-type', 'group-metrics')
     if table_type == 'group-metrics':
-        return stackalyticscli.GroupMetricsTable(**params)
+        return launchpadstats.GroupMetricsTable(**params)
     elif table_type == 'user-metrics':
-        return stackalyticscli.UserMetricsTable(**params)
+        return launchpadstats.UserMetricsTable(**params)
     else:
         raise Exception("Unknown table type '%s'" % table_type)
 
@@ -62,7 +62,7 @@ def main():
     if args['verbose']:
         LOG.setLevel(logging.INFO)
     try:
-        config = stackalyticscli.get_config(args['config'])
+        config = launchpadstats.get_config(args['config'])
         params = dict(config.items(args['table_name']))
 
         table = get_table(params)

@@ -21,14 +21,14 @@ except (IOError, ImportError):
     long_description = ''
 
 setup(
-    name='stackalyticscli',
+    name='launchpadstats',
     version='0.0.1',
     author='Martina Kollarova',
     author_email='mkollaro@gmail.com',
-    url='https://github.com/mkollaro/stackalyticscli',
-    packages=['stackalyticscli'],
+    url='https://github.com/mkollaro/launchpadstats',
+    packages=['launchpadstats'],
     license='Apache License, Version 2.0',
-    scripts=['bin/stackalyticscli'],
+    scripts=['bin/launchpadstats'],
     description='Get data from Stackalytics trough the CLI.',
     long_description=long_description,
     install_requires=['requests'],

@@ -13,7 +13,7 @@ implemented table types are *group-metrics* and *user-metrics*.
 With the *group-metrics* table type (specified in the default `config.ini`
 file):
 
-    $ stackalyticscli --table-name group-summary
+    $ launchpadstats --table-name group-summary
     metric/release; havana; juno; icehouse
     drafted_blueprint_count; 2; 1; 0
     completed_blueprint_count; 1; 1; 1
@@ -23,7 +23,7 @@ file):
 
 Example with the *user-metrics* table type:
 
-    $ stackalyticscli --table-name user-metrics-havana
+    $ launchpadstats --table-name user-metrics-havana
     user/metric; drafted_blueprint_count; completed_blueprint_count; filed_bug_count; resolved_bug_count; commit_count; reviews (-2, -1, +1, +2, A)
     mkollaro; 1; 0; 3; 1; 9; (0, 6, 12, 0, 0)
     psedlak; 0; 1; 0; 0; 9; (0, 9, 19, 0, 0)
@@ -34,7 +34,7 @@ Example with the *user-metrics* table type:
 
 For more information, look into the `config.ini` table.
 
-    usage: stackalyticscli [-h] [-v] [-c CONFIG] [-t TABLE_NAME]
+    usage: launchpadstats [-h] [-v] [-c CONFIG] [-t TABLE_NAME]
 
     Get Stackalytics data and create various types of tables out of them.
 
