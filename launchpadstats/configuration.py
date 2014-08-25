@@ -16,9 +16,8 @@
 
 import logging
 import ConfigParser
-from os.path import dirname, join, normpath, isfile
+from os.path import isfile
 
-PROJ_DIR = normpath(join(dirname(__file__), ".."))
 LOG = logging.getLogger('launchpadstats')
 
 DEFAULTS = {
@@ -31,15 +30,13 @@ DEFAULTS = {
 }
 
 
-def get_config(filepath=None):
+def get_config(filepath):
     """Read the .ini configuration file given in filepath.
 
     If no filepath is given, try reading 'config.ini' in the project directory.
 
     :returns: ConfigParser object
     """
-    if not filepath:
-        filepath = join(PROJ_DIR, 'config.ini')
     LOG.info("Reading configuration file '%s'", filepath)
     if not isfile(filepath):
         raise Exception("No such file '%s'" % filepath)

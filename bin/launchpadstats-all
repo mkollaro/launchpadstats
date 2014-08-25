@@ -34,7 +34,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="Show logging output.")
-    parser.add_argument('-c', '--config',
+    parser.add_argument('-c', '--config', required=True,
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory.")
     args = vars(parser.parse_args())
