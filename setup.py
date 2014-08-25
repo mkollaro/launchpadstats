@@ -22,7 +22,7 @@ except (IOError, ImportError):
 
 setup(
     name='launchpadstats',
-    version='0.1.1',
+    version='0.1.3',
     author='Martina Kollarova',
     author_email='mkollaro@gmail.com',
     url='https://github.com/mkollaro/launchpadstats',
