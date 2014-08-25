@@ -16,6 +16,7 @@
 import logging
 import json
 import abc
+import collections
 
 import launchpadstats
 
@@ -56,7 +57,7 @@ class Table(object):
         self.people = people.split(',')
         self.releases = releases.split(',')
         self.metrics = metrics.split(',')
-        self._data = dict()
+        self._data = collections.OrderedDict()
         self._data_matrix = list()
 
     @abc.abstractmethod
