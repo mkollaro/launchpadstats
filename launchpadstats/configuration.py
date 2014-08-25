@@ -21,6 +21,15 @@ from os.path import dirname, join, normpath, isfile
 PROJ_DIR = normpath(join(dirname(__file__), ".."))
 LOG = logging.getLogger('launchpadstats')
 
+DEFAULTS = {
+    'project_type': 'all',
+    'company': '',
+    'people': 'all',
+    'releases': 'all',
+    'table_type': 'group-metrics',
+    'metrics': 'filed_bug_count,resolved_bug_count',
+}
+
 
 def get_config(filepath=None):
     """Read the .ini configuration file given in filepath.
@@ -35,6 +44,6 @@ def get_config(filepath=None):
     if not isfile(filepath):
         raise Exception("No such file '%s'" % filepath)
 
-    config = ConfigParser.ConfigParser()
+    config = ConfigParser.ConfigParser(DEFAULTS)
     config.read(filepath)
     return config

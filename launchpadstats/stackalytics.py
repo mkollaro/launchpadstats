@@ -20,26 +20,17 @@ LOG = logging.getLogger('launchpadstats')
 
 
 STACKALYTICS_URL = 'http://stackalytics.com/'
-COMPANY = 'Red Hat'
-PROJECT_TYPE = 'OpenStack'
 
 
 def get_stats(params):
     """Query Stackalytics 'contribution' module with `params`.
 
     :param params: a dictionary of data passed to the 'contribution' module,
-        e.g. 'user_id', 'release', 'company'. If 'company' is not specified,
-        use `COMPANY`, if 'project_type' is not specified, use 'OpenStack'.
-        The values can contain more items seprated by commas, e.g.
-        `{'user_id': 'user1,user2,user3'}`.
+        e.g. 'user_id', 'release', 'company'.  The values can contain more
+        items seprated by commas, e.g.  `{'user_id': 'user1,user2,user3'}`.
     """
     MODULE = 'api/1.0/contribution'
     params = dict(params)
-    if 'company' not in params:
-        params['company'] = COMPANY
-    if 'project_type' not in params:
-        params['project_type'] = PROJECT_TYPE
-
     LOG.info("Using parameters: %s", params)
     r = requests.get(STACKALYTICS_URL + MODULE, params=params)
     LOG.info(r.url)

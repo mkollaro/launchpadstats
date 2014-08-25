@@ -43,7 +43,8 @@ class Table(object):
     # show the total of the data at the end of the table
     _show_sum = False
 
-    def __init__(self, people, releases, metrics, **kwargs):
+    def __init__(self, people, releases, metrics, company='',
+                 project_type='all', **kwargs):
         """Set filters for the queries.
 
         :param people: comma-separated string with list of user IDs in
@@ -54,6 +55,14 @@ class Table(object):
         :param metrics: comma-separated string with list of metrics to show in
             the CSV table (and in some cases, create a sum total of them)
         """
+        # The default parameters to the requests, to be overwritten by the
+        # `self.generate()` method depending on what request is needed
+        self._request_params = {
+            'user_id': people,
+            'release': releases,
+            'company': company,
+            'project_type': project_type,
+        }
         self.people = people.split(',')
         self.releases = releases.split(',')
         self.metrics = metrics.split(',')
@@ -162,8 +171,8 @@ class GroupMetricsTable(Table):
 
     def generate(self):
         for release in self.releases:
-            params = {'release': release, 'user_id': ','.join(self.people)}
-            stats = launchpadstats.get_stats(params)
+            self._request_params['release'] = release
+            stats = launchpadstats.get_stats(self._request_params)
             self._data[release] = stats['contribution']
         self._parse_data()
 
@@ -180,8 +189,8 @@ class UserMetricsTable(Table):
 
     def generate(self):
         for person in self.people:
-            params = {'release': ','.join(self.releases), 'user_id': person}
-            stats = launchpadstats.get_stats(params)
+            self._request_params['user_id'] = person
+            stats = launchpadstats.get_stats(self._request_params)
             self._data[person] = stats['contribution']
         self._parse_data()
 
