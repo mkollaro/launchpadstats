@@ -43,6 +43,7 @@ def get_config(filepath):
     if not isfile(filepath):
         raise Exception("No such file '%s'" % filepath)
 
-    config = ConfigParser.ConfigParser(DEFAULTS)
+    config = ConfigParser.ConfigParser(DEFAULTS,
+                                       dict_type=collections.OrderedDict)
     config.read(filepath)
     return config
