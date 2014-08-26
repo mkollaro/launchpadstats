@@ -16,18 +16,20 @@
 
 import logging
 import ConfigParser
+import collections
 from os.path import isfile
 
 LOG = logging.getLogger('launchpadstats')
 
-DEFAULTS = {
-    'project_type': 'all',
-    'company': '',
-    'people': 'all',
-    'releases': 'all',
-    'table_type': 'group-metrics',
-    'metrics': 'filed_bug_count,resolved_bug_count',
-}
+# use OrderedDict so that ConfigParser keeps the order of sections
+DEFAULTS = collections.OrderedDict([
+    ('project_type', 'all'),
+    ('company', ''),
+    ('people', 'all'),
+    ('releases', 'all'),
+    ('table_type', 'group-metrics'),
+    ('metrics', 'filed_bug_count,resolved_bug_count'),
+])
 
 
 def get_config(filepath):
