@@ -22,16 +22,13 @@ except (IOError, ImportError):
 
 setup(
     name='launchpadstats',
-    version='0.1.3',
+    version='0.1.6',
     author='Martina Kollarova',
     author_email='mkollaro@gmail.com',
     url='https://github.com/mkollaro/launchpadstats',
     packages=['launchpadstats'],
     license='Apache License, Version 2.0',
     scripts=['bin/launchpadstats', 'bin/launchpadstats-all'],
-    data_files=[
-        ('config', ['config.ini']),
-    ],
     description='Get data from Stackalytics trough the CLI.',
     long_description=long_description,
     install_requires=['requests'],
