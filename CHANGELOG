@@ -1,0 +1,8 @@
+0.2
+    * fixed bugs
+         - show empty values for non-existent users
+         - keep order of sections
+
+0.1
+    * initial release
+
