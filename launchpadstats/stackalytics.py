@@ -21,6 +21,9 @@ LOG = logging.getLogger('launchpadstats')
 
 STACKALYTICS_URL = 'http://stackalytics.com/'
 
+# cache of whether a user is registered in Launchpad/Stackalytics or not
+_USER_CACHE = dict()
+
 
 def get_stats(params):
     """Query Stackalytics 'contribution' module with `params`.
@@ -49,6 +52,9 @@ def check_users_exist(user_ids):
     """
     result = dict()
     for user in user_ids:
+        if user in _USER_CACHE:
+            result[user] = _USER_CACHE[user]
+            continue
         r = requests.get(STACKALYTICS_URL, params={'user_id': user})
         LOG.info("Checking %s", r.url)
         if r.status_code == requests.codes.ok:
@@ -56,4 +62,5 @@ def check_users_exist(user_ids):
         else:
             result[user] = False
             LOG.warning("User_id '%s' is not registered in Launchpad", user)
+        _USER_CACHE[user] = result[user]
     return result
