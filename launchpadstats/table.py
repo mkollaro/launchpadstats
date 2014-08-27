@@ -31,6 +31,16 @@ SKIP_FROM_SUM = ['marks', 'loc']
 
 class Table(object):
     """Base class for the table generators.
+
+    The main data are held in 2 structures:
+        `self._data` is a order dictionary of dictionaries. The first level of
+                     keys depends on the subclass - e.g. releases in
+                     group-metrics and users in user-metrics. The second level
+                     might not be ordered and should be the individual metrics,
+                     e.g. 'loc', 'commit_count', etc.
+        `self._data_matrix` is a 2D array (list of lists) that contains the
+                    same data in their almost final form - to be converted
+                    into CSV or HTML
     """
     __metaclass__ = abc.ABCMeta
 
@@ -150,13 +160,14 @@ class Table(object):
     def _prettify_data(self, data, metric):
         """Change some data (e.g. review marks) into something more readable.
         """
-        if metric == 'reviews':
+        if metric not in data or data[metric] is None:
+            return ''
+        elif metric == 'reviews':
             marks = data['marks']
             result = [str(marks[i]) for i in ['-2', '-1', '1', '2', 'A']]
-            result = '(' + ', '.join(result) + ')'
+            return '(' + ', '.join(result) + ')'
         else:
-            result = str(data[metric])
-        return result
+            return str(data[metric])
 
 
 class GroupMetricsTable(Table):
@@ -188,10 +199,14 @@ class UserMetricsTable(Table):
     _flip = True
 
     def generate(self):
+        user_exists = launchpadstats.check_users_exist(self.people)
         for person in self.people:
-            self._request_params['user_id'] = person
-            stats = launchpadstats.get_stats(self._request_params)
-            self._data[person] = stats['contribution']
+            self._data[person] = collections.defaultdict(None)
+            if user_exists[person]:
+                self._request_params['user_id'] = person
+                r = launchpadstats.get_stats(self._request_params)
+                stats = collections.defaultdict(None, r['contribution'])
+                self._data[person] = stats
         self._parse_data()
 
     def html(self):

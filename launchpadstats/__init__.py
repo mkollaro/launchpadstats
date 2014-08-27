@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from launchpadstats.stackalytics import get_stats, STACKALYTICS_URL
+from launchpadstats.stackalytics import get_stats, check_users_exist
+from launchpadstats.stackalytics import STACKALYTICS_URL
 from launchpadstats.configuration import get_config
 from launchpadstats.table import Table, GroupMetricsTable, UserMetricsTable
 from launchpadstats.table import get_table
 
 
-__all__ = [get_stats, STACKALYTICS_URL,
+__all__ = [get_stats, check_users_exist, STACKALYTICS_URL,
            get_config,
            get_table, Table, GroupMetricsTable, UserMetricsTable]

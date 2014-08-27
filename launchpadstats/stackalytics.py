@@ -36,3 +36,24 @@ def get_stats(params):
     LOG.info(r.url)
     r.raise_for_status()
     return r.json()
+
+
+def check_users_exist(user_ids):
+    """Check if the users exist in Stackalytics (and therefore in Launchpad).
+
+    TODO: use grequests for async requests to make this faster
+
+    :param user_ids: list of user_id items
+    :returns: dictionary with user_ids as keys and booleans as values. The user
+        is registered in Launchpad/Stackalytics iff `result[user] == True`.
+    """
+    result = dict()
+    for user in user_ids:
+        r = requests.get(STACKALYTICS_URL, params={'user_id': user})
+        LOG.info("Checking %s", r.url)
+        if r.status_code == requests.codes.ok:
+            result[user] = True
+        else:
+            result[user] = False
+            LOG.warning("User_id '%s' is not registered in Launchpad", user)
+    return result
