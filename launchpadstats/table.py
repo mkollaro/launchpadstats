@@ -18,7 +18,7 @@ import json
 import abc
 import collections
 
-import launchpadstats
+from launchpadstats import stackalytics
 
 LOG = logging.getLogger('launchpadstats')
 
@@ -92,7 +92,7 @@ class Table(object):
         pass
 
     def json(self):
-        """Return the JSON raw data, with all the metrics"""
+        """Return the JSON raw data, with all the metrics."""
         return self._data
 
     def csv(self, delimiter=CSV_SEPARATOR):
@@ -141,7 +141,8 @@ class Table(object):
         Skip the items in `SKIP_FROM_SUM` even if they are given in
         `self.metrics`, e.g. the review marks.
         The result should be saved in the `self._data[item]['sum']`. It will be
-        printed in the CSV representation."""
+        printed in the CSV representation.
+        """
         for key, metrics in self._data.iteritems():
             total = 0
             for metric, value in metrics.iteritems():
@@ -183,7 +184,7 @@ class GroupMetricsTable(Table):
     def generate(self):
         for release in self.releases:
             self._request_params['release'] = release
-            stats = launchpadstats.get_stats(self._request_params)
+            stats = stackalytics.get_stats(self._request_params)
             self._data[release] = stats['contribution']
         self._parse_data()
 
@@ -199,12 +200,12 @@ class UserMetricsTable(Table):
     _flip = True
 
     def generate(self):
-        user_exists = launchpadstats.check_users_exist(self.people)
+        user_exists = stackalytics.check_users_exist(self.people)
         for person in self.people:
             self._data[person] = collections.defaultdict(None)
             if user_exists[person]:
                 self._request_params['user_id'] = person
-                r = launchpadstats.get_stats(self._request_params)
+                r = stackalytics.get_stats(self._request_params)
                 stats = collections.defaultdict(None, r['contribution'])
                 self._data[person] = stats
         self._parse_data()
@@ -216,7 +217,7 @@ class UserMetricsTable(Table):
             row = list(row)
             user = row[0]
             row[0] = '<a href=%s?user_id=%s&release=%s>%s</a>' \
-                     % (launchpadstats.STACKALYTICS_URL,
+                     % (stackalytics.STACKALYTICS_URL,
                         user, ','.join(self.releases), user)
             new_matrix.append(row)
         return _get_html_table(new_matrix)
@@ -232,9 +233,9 @@ def get_table(table_type, params):
         method of the Table subclass
     """
     if table_type == 'group-metrics' or table_type is None:
-        return launchpadstats.GroupMetricsTable(**params)
+        return GroupMetricsTable(**params)
     elif table_type == 'user-metrics':
-        return launchpadstats.UserMetricsTable(**params)
+        return UserMetricsTable(**params)
     else:
         raise Exception("Unknown table type '%s'" % table_type)
 

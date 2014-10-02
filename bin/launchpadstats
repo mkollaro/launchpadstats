@@ -18,7 +18,8 @@ import argparse
 import sys
 import traceback
 
-import launchpadstats
+import launchpadstats.configuration
+import launchpadstats.table
 
 
 logging.basicConfig()
@@ -50,11 +51,11 @@ def main():
     if args['verbose']:
         LOG.setLevel(logging.INFO)
     try:
-        config = launchpadstats.get_config(args['config'])
+        config = launchpadstats.configuration.get_config(args['config'])
         params = dict(config.items(args['table_name']))
         table_type = params.get('table-type')
 
-        table = launchpadstats.get_table(table_type, params)
+        table = launchpadstats.table.get_table(table_type, params)
         table.generate()
         if args['output_format'] == 'html':
             print table.html()

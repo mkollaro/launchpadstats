@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # Copyright (c) 2014 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import setup
+import setuptools.setup
 try:
     # pypi doesn't support the .md format
     import pypandoc
@@ -20,7 +21,7 @@ try:
 except (IOError, ImportError):
     long_description = ''
 
-setup(
+setuptools.setup(
     name='launchpadstats',
     version='0.2.1',
     author='Martina Kollarova',

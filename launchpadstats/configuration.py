@@ -17,7 +17,7 @@
 import logging
 import ConfigParser
 import collections
-from os.path import isfile
+import os.path
 
 LOG = logging.getLogger('launchpadstats')
 
@@ -40,7 +40,7 @@ def get_config(filepath):
     :returns: ConfigParser object
     """
     LOG.info("Reading configuration file '%s'", filepath)
-    if not isfile(filepath):
+    if not os.path.isfile(filepath):
         raise Exception("No such file '%s'" % filepath)
 
     config = ConfigParser.ConfigParser(DEFAULTS,
