@@ -13,7 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import setuptools.setup
+import sys
+import setuptools
+import setuptools.command.test
+
+import launchpadstats
+
 try:
     # pypi doesn't support the .md format
     import pypandoc
@@ -21,9 +26,23 @@ try:
 except (IOError, ImportError):
     long_description = ''
 
+
+class Tox(setuptools.command.test.test):
+    def finalize_options(self):
+        super(Tox, self).finalize_options()
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        # import must be here, because outside the eggs aren't loaded
+        import tox
+        errcode = tox.cmdline(self.test_args)
+        sys.exit(errcode)
+
+
 setuptools.setup(
     name='launchpadstats',
-    version='0.2.1',
+    version=launchpadstats.__version__,
     author='Martina Kollarova',
     author_email='mkollaro@gmail.com',
     url='https://github.com/mkollaro/launchpadstats',
@@ -33,5 +52,5 @@ setuptools.setup(
     description='Get data from Stackalytics trough the CLI.',
     long_description=long_description,
     install_requires=['requests'],
-    tests_require=['nose'],
+    tests_require=['nose', 'tox>=1.6'],
 )
