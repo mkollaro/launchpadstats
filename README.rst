@@ -44,33 +44,6 @@ considered a table, except the section *DEFAULT*):
 
     $ launchpadstats-all > everything.html
 
-Usage
------
-
-For more information, look into the ``config.ini`` table.
-
-::
-
-    usage: launchpadstats [-h] [-v] -c CONFIG [-t TABLE_NAME]
-                          [--output-format {csv,html}]
-
-    Get Launchpad statistics trough Stackalytics and create various types of
-    tables out of them.
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      -v, --verbose         Show logging output.
-      -c CONFIG, --config CONFIG
-                            Configuration file, by default use 'config.ini' in the
-                            project directory.
-      -t TABLE_NAME, --table-name TABLE_NAME
-                            Which section name in the config file to use, the
-                            default value is 'DEFAULT'.
-      --output-format {csv,html}
-                            What output format to use. Default is 'csv'.
-
-The command ``launchpadstats-all`` is similar, but creates a single HTML
-page with all of the tables.
 
 Configuration
 -------------
