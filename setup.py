@@ -15,7 +15,7 @@
 
 import sys
 import setuptools
-import setuptools.command.test
+from setuptools.command.test import test as TestCommand
 
 import launchpadstats
 
@@ -24,9 +24,9 @@ with open('README.rst') as f:
     long_description = f.read()
 
 
-class Tox(setuptools.command.test.test):
+class Tox(TestCommand):
     def finalize_options(self):
-        super(Tox, self).finalize_options()
+        TestCommand.finalize_options(self)
         self.test_args = []
         self.test_suite = True
 
@@ -46,8 +46,26 @@ setuptools.setup(
     packages=['launchpadstats'],
     license='Apache License, Version 2.0',
     scripts=['bin/launchpadstats', 'bin/launchpadstats-all'],
-    description='Get data from Stackalytics trough the CLI.',
+    description='Get Launchpad statistics and create various CSV or HTML'
+                ' tables from them.',
     long_description=long_description,
+    include_package_data=True,
+    platforms='any',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: Apache Software License',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2'
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Utilities',
+        ],
     install_requires=['requests'],
     tests_require=['nose', 'tox>=1.6'],
+    cmdclass={'test': Tox},
 )
