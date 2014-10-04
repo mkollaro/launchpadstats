@@ -20,12 +20,12 @@ file provided:
 ::
 
     $ launchpadstats -c ./config.ini --table-name tableA
-    metric/release; havana; juno; icehouse
-    drafted_blueprint_count; 2; 1; 0
+    metric/release; havana; icehouse; juno
+    drafted_blueprint_count; 2; 0; 1
     completed_blueprint_count; 1; 1; 1
-    filed_bug_count; 53; 50; 45
-    resolved_bug_count; 9; 6; 7
-    sum; 65; 58; 53
+    filed_bug_count; 55; 45; 64
+    resolved_bug_count; 9; 7; 10
+    sum; 67; 53; 76
 
 Example with the *user-metrics* table type:
 
