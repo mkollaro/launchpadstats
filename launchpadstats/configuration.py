@@ -15,13 +15,13 @@
 """Read the configuration file."""
 
 import logging
-import ConfigParser
 import collections
 import os.path
+from six.moves import configparser
 
 LOG = logging.getLogger('launchpadstats')
 
-# use OrderedDict so that ConfigParser keeps the order of sections
+# use OrderedDict so that configparser keeps the order of sections
 DEFAULTS = collections.OrderedDict([
     ('project_type', 'all'),
     ('company', ''),
@@ -43,7 +43,7 @@ def get_config(filepath):
     if not os.path.isfile(filepath):
         raise Exception("No such file '%s'" % filepath)
 
-    config = ConfigParser.ConfigParser(DEFAULTS,
+    config = configparser.ConfigParser(DEFAULTS,
                                        dict_type=collections.OrderedDict)
     config.read(filepath)
     return config

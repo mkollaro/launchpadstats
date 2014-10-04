@@ -117,7 +117,7 @@ class Table(object):
         self._add_metrics_sum()
         LOG.info(json.dumps(self._data, indent=4))
         # header (or first collumn if it gets flipped)
-        header = self._data.keys()
+        header = list(self._data.keys())
         row = [self.header_info] + header
         result = [row]
         # print data
@@ -132,7 +132,7 @@ class Table(object):
 
         if self._flip:
             # transpose the matrix
-            result = zip(*result)
+            result = list(zip(*result))
         self._data_matrix = result
 
     def _add_metrics_sum(self):
@@ -143,9 +143,9 @@ class Table(object):
         The result should be saved in the `self._data[item]['sum']`. It will be
         printed in the CSV representation.
         """
-        for key, metrics in self._data.iteritems():
+        for key, metrics in list(self._data.items()):
             total = 0
-            for metric, value in metrics.iteritems():
+            for metric, value in list(metrics.items()):
                 if metric in self.metrics and metric not in SKIP_FROM_SUM:
                     total += value
             self._data[key]['sum'] = total
