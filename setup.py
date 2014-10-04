@@ -19,12 +19,9 @@ import setuptools.command.test
 
 import launchpadstats
 
-try:
-    # pypi doesn't support the .md format
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except (IOError, ImportError):
-    long_description = ''
+
+with open('README.rst') as f:
+    long_description = f.read()
 
 
 class Tox(setuptools.command.test.test):
