@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import logging
 import argparse
 import sys
@@ -58,11 +59,11 @@ def main():
         table = launchpadstats.table.get_table(table_type, params)
         table.generate()
         if args['output_format'] == 'html':
-            print table.html()
+            print(table.html())
         else:
-            print table.csv()
+            print(table.csv())
 
-    except Exception, e:
+    except Exception as e:
         sys.stderr.write("%s: %s\n" % (type(e).__name__, e))
         if args['verbose']:
             traceback.print_exc()

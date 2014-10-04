@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import logging
 import argparse
 import sys
@@ -49,18 +50,18 @@ def main():
     try:
         config = launchpadstats.configuration.get_config(args['config'])
 
-        print '<html>'
+        print('<html>')
         for section in config.sections():
             params = dict(config.items(section))
             table_type = params.get('table-type')
             table = launchpadstats.table.get_table(table_type, params)
             table.generate()
             header = params.get('description', section)
-            print '<h2>%s</h2>' % header
-            print table.html()
-        print '</html>'
+            print('<h2>%s</h2>' % header)
+            print(table.html())
+        print('</html>')
 
-    except Exception, e:
+    except Exception as e:
         sys.stderr.write("%s: %s\n" % (type(e).__name__, e))
         if args['verbose']:
             traceback.print_exc()
