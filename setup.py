@@ -15,10 +15,12 @@
 
 import sys
 import setuptools
+import pip.req
 from setuptools.command.test import test as TestCommand
 
 import launchpadstats
 
+install_reqs = pip.req.parse_requirements('requirements.txt')
 
 with open('README.rst') as f:
     long_description = f.read()
@@ -65,7 +67,7 @@ setuptools.setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Utilities',
         ],
-    install_requires=['requests'],
-    tests_require=['nose', 'tox>=1.6'],
+    install_requires=[str(x.req) for x in install_reqs],
+    tests_require=['tox>=1.6'],  # tox will take care of the other reqs
     cmdclass={'test': Tox},
 )
