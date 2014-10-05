@@ -17,25 +17,54 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import mock
 import requests
-import nose.tools
+from nose.tools import raises, assert_equals
 
 import launchpadstats.stackalytics
 import fakes
 
 
+def fake_request(url, params):
+    """Simulate `requests.get()`."""
+    if 'something_bad' in params:
+        return fakes.BAD_RESPONSE
+    elif 'user_id' not in params:
+        return fakes.GOOD_RESPONSE
+    elif params['user_id'].startswith('known_user'):
+        return fakes.GOOD_RESPONSE
+    else:
+        return fakes.BAD_RESPONSE
+
+
 class TestStats():
     def setup(self):
-        self.good_response = fakes.response(content=fakes.CONTRIBUTION_STATS)
-        self.bad_response = fakes.response(status_code=404, reason="Not Found")
+        self.patch = mock.patch('launchpadstats.stackalytics.requests.get',
+                                side_effect=fake_request)
+        self.mock_request = self.patch.start()
 
-    @mock.patch('launchpadstats.stackalytics.requests')
-    def test_empty_params(self, mock_requests):
-        mock_requests.get.return_value = self.good_response
-        r = launchpadstats.stackalytics.get_stats(dict())
-        nose.tools.assert_equals(r, self.good_response.json())
+    def teardown(self):
+        self.patch.stop()
 
-    @nose.tools.raises(requests.HTTPError)
-    @mock.patch('launchpadstats.stackalytics.requests')
-    def test_bad_return_code(self, mock_requests):
-        mock_requests.get.return_value = self.bad_response
-        launchpadstats.stackalytics.get_stats(dict())
+    def test_empty_params(self):
+        res = launchpadstats.stackalytics.get_stats(dict())
+        assert_equals(res, fakes.GOOD_RESPONSE.json())
+
+    @raises(requests.HTTPError)
+    def test_bad_response(self):
+        launchpadstats.stackalytics.get_stats({'something_bad': ''})
+
+    def test_user_exists(self):
+        res = launchpadstats.stackalytics.check_users_exist(['known_user1'])
+        assert_equals(res, {'known_user1': True})
+
+    def test_user_doesnt_exist(self):
+        res = launchpadstats.stackalytics.check_users_exist(['unknown_user1'])
+        assert_equals(res, {'unknown_user1': False})
+
+    def test_multiple_users_check(self):
+        res = launchpadstats.stackalytics.check_users_exist(['unknown_user2',
+                                                             'known_user2'])
+        assert_equals(res, {'unknown_user2': False, 'known_user2': True})
+
+    def test_empty_user_list(self):
+        res = launchpadstats.stackalytics.check_users_exist([])
+        assert_equals(res, dict())

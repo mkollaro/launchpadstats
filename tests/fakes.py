@@ -49,3 +49,6 @@ def response(status_code=200, content='', headers=None, reason=None):
     res.headers = requests.structures.CaseInsensitiveDict(headers or {})
     res.reason = reason
     return res
+
+GOOD_RESPONSE = response(content=CONTRIBUTION_STATS)
+BAD_RESPONSE = response(status_code=404, reason="Not Found")
