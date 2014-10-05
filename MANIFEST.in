@@ -1,3 +1,9 @@
 include LICENSE
 include CHANGELOG
+include INSTALL.rst
+include README.rst
 include config.ini
+include tests/*.py
+include requirements.txt
+include test-requirements.txt
+include tox.ini
