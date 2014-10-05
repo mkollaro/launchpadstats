@@ -14,6 +14,7 @@
 
 """Read the configuration file."""
 
+from __future__ import absolute_import, print_function, unicode_literals
 import logging
 import collections
 import os.path

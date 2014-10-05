@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import, print_function, unicode_literals
 import sys
 import setuptools
 import pip.req
