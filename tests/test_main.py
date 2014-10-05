@@ -14,13 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import, print_function, unicode_literals
+import mock
+import requests
+import nose.tools
 
-class Test():
+import launchpadstats.stackalytics
+import fakes
+
+
+class TestStats():
     def setup(self):
-        pass
+        self.good_response = fakes.response(content=fakes.CONTRIBUTION_STATS)
+        self.bad_response = fakes.response(status_code=404, reason="Not Found")
 
-    def teardown(self):
-        pass
+    @mock.patch('launchpadstats.stackalytics.requests')
+    def test_empty_params(self, mock_requests):
+        mock_requests.get.return_value = self.good_response
+        r = launchpadstats.stackalytics.get_stats(dict())
+        nose.tools.assert_equals(r, self.good_response.json())
 
-    def test(self):
-        assert 1 == 1
+    @nose.tools.raises(requests.HTTPError)
+    @mock.patch('launchpadstats.stackalytics.requests')
+    def test_bad_return_code(self, mock_requests):
+        mock_requests.get.return_value = self.bad_response
+        launchpadstats.stackalytics.get_stats(dict())
