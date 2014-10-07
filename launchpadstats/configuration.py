@@ -16,14 +16,17 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 import logging
-import collections
 import os.path
 from six.moves import configparser
+try:
+    from collections import OrderedDict
+except ImportError:  # Python 2.6
+    from odict import odict as OrderedDict
 
 LOG = logging.getLogger('launchpadstats')
 
 # use OrderedDict so that configparser keeps the order of sections
-DEFAULTS = collections.OrderedDict([
+DEFAULTS = OrderedDict([
     ('project_type', 'all'),
     ('company', ''),
     ('people', 'all'),
@@ -45,6 +48,6 @@ def get_config(filepath):
         raise Exception("No such file '%s'" % filepath)
 
     config = configparser.ConfigParser(DEFAULTS,
-                                       dict_type=collections.OrderedDict)
+                                       dict_type=OrderedDict)
     config.read(filepath)
     return config

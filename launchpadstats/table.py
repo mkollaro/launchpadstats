@@ -17,7 +17,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 import logging
 import json
 import abc
-import collections
+from collections import defaultdict
+try:
+    from collections import OrderedDict
+except ImportError:  # Python 2.6
+    from odict import odict as OrderedDict
 
 from launchpadstats import stackalytics
 
@@ -77,7 +81,7 @@ class Table(object):
         self.people = people.split(',')
         self.releases = releases.split(',')
         self.metrics = metrics.split(',')
-        self._data = collections.OrderedDict()
+        self._data = OrderedDict()
         self._data_matrix = list()
 
     @abc.abstractmethod
@@ -203,11 +207,11 @@ class UserMetricsTable(Table):
     def generate(self):
         user_exists = stackalytics.check_users_exist(self.people)
         for person in self.people:
-            self._data[person] = collections.defaultdict(None)
+            self._data[person] = defaultdict(None)
             if user_exists[person]:
                 self._request_params['user_id'] = person
                 r = stackalytics.get_stats(self._request_params)
-                stats = collections.defaultdict(None, r['contribution'])
+                stats = defaultdict(None, r['contribution'])
                 self._data[person] = stats
         self._parse_data()
 

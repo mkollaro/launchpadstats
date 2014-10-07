@@ -1,2 +1,4 @@
 requests>=2.4
 six>=1.7
+odict>=1.5
+argparse>=1.2
