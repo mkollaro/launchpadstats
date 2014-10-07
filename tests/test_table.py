@@ -51,11 +51,11 @@ class TestGroupMetricsTable():
 
     def test_simple_query(self):
         table = GroupMetricsTable(people='user1',
-                                  releases='Icehouse',
+                                  releases='icehouse',
                                   metrics='loc')
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
         expected_result = [
-            [table.header_info, 'Icehouse'],
+            [table.header_info, 'icehouse'],
             [PRETTY_NAME['loc'], str(fake_response['loc'])],
             ['sum', '0']  # because LOC is in `SKIP_FROM_SUM`
         ]
@@ -65,11 +65,11 @@ class TestGroupMetricsTable():
 
     def test_query(self):
         table = GroupMetricsTable(people='user1,user2,user3',
-                                  releases='Havana,Icehouse,Juno',
+                                  releases='havana,icehouse,juno',
                                   metrics='loc')
         fake_loc = str(fakes.GOOD_RESPONSE.json()['contribution']['loc'])
         expected_result = [
-            [table.header_info, 'Havana', 'Icehouse', 'Juno'],
+            [table.header_info, 'havana', 'icehouse', 'juno'],
             [PRETTY_NAME['loc'], fake_loc, fake_loc, fake_loc],
             ['sum', '0', '0', '0']  # because LOC is in `SKIP_FROM_SUM`
         ]
@@ -78,11 +78,11 @@ class TestGroupMetricsTable():
 
     def test_release_order(self):
         table = GroupMetricsTable(people='user1',
-                                  releases='Havana,Juno,Icehouse',
+                                  releases='havana,juno,icehouse',
                                   metrics='loc')
         table.generate()
         assert_equals(table.matrix()[0],
-                      [table.header_info, 'Havana', 'Juno', 'Icehouse'])
+                      [table.header_info, 'havana', 'juno', 'icehouse'])
 
     def test_metrics(self):
         # test all metrics except reviews and the sum
@@ -91,11 +91,11 @@ class TestGroupMetricsTable():
                    'completed_blueprint_count', 'filed_bug_count',
                    'resolved_bug_count', 'patch_set_count')
         table = GroupMetricsTable(people='user1,user2,user3',
-                                  releases='Havana', metrics=','.join(metrics))
+                                  releases='havana', metrics=','.join(metrics))
         table.generate()
         matrix = table.matrix()
         assert_equals(_matrix_size(matrix), (len(metrics) + 2, 2))
-        assert_equals(matrix[0], [table.header_info, 'Havana'])
+        assert_equals(matrix[0], [table.header_info, 'havana'])
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
         for index, metric in enumerate(metrics):
             assert_equals(matrix[index + 1][0], metric)
@@ -104,7 +104,7 @@ class TestGroupMetricsTable():
 
     def test_reviews(self):
         table = GroupMetricsTable(people='user1,user2,user3',
-                                  releases='Havana', metrics='reviews')
+                                  releases='havana', metrics='reviews')
         table.generate()
         assert_equals(table.matrix()[1][0], PRETTY_NAME['reviews'])
         reviews = table.matrix()[1][1].strip('()').split(',')
