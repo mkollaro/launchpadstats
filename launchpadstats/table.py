@@ -34,6 +34,9 @@ CSV_SEPARATOR = '; '
 # which metrics should be skipped when a sum is made of the metrics
 SKIP_FROM_SUM = ['marks', 'loc']
 
+# how will the reviews be shown
+REVIEWS_FORMAT = ['-2', '-1', '1', '2', 'A']
+
 
 class ReturnUnknownKeyDict(dict):
     """If a value for the key is not found, return the key."""
@@ -42,7 +45,7 @@ class ReturnUnknownKeyDict(dict):
 
 # alternative names for things like metrics, to improve readability in results
 PRETTY_NAME = ReturnUnknownKeyDict({
-    'reviews': 'reviews (-2, -1, +1, +2, A)',
+    'reviews': 'reviews (%s)' % ', '.join(REVIEWS_FORMAT),
 })
 
 
@@ -169,12 +172,12 @@ class Table(object):
     def _prettify_data(self, data, metric):
         """Change some data (e.g. review marks) into something more readable.
         """
+        if metric == 'reviews':
+            marks = data['marks']
+            result = [str(marks[i]) for i in REVIEWS_FORMAT]
+            return '(' + ', '.join(result) + ')'
         if metric not in data or data[metric] is None:
             return ''
-        elif metric == 'reviews':
-            marks = data['marks']
-            result = [str(marks[i]) for i in ['-2', '-1', '1', '2', 'A']]
-            return '(' + ', '.join(result) + ')'
         else:
             return str(data[metric])
 
