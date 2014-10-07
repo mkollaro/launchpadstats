@@ -97,9 +97,8 @@ class Table(object):
         """
         pass
 
-    def json(self):
-        """Return the JSON raw data, with all the metrics."""
-        return self._data
+    def matrix(self):
+        return self._data_matrix
 
     def csv(self, delimiter=CSV_SEPARATOR):
         """Return a string with a CSV representation of the data.
