@@ -36,6 +36,10 @@ DEFAULTS = OrderedDict([
 ])
 
 
+class ConfigurationError(Exception):
+    pass
+
+
 def get_config(filepath):
     """Read the .ini configuration file given in filepath.
 
@@ -45,7 +49,7 @@ def get_config(filepath):
     """
     LOG.info("Reading configuration file '%s'", filepath)
     if not os.path.isfile(filepath):
-        raise Exception("No such file '%s'" % filepath)
+        raise ConfigurationError("No such file '%s'" % filepath)
 
     config = configparser.ConfigParser(DEFAULTS,
                                        dict_type=OrderedDict)
