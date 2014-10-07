@@ -24,7 +24,7 @@ import fakes
 
 
 def fake_request(url, params):
-    """Simulate `requests.get()`."""
+    """Simulate `requests.get()` on the stackalytics API."""
     if 'something_bad' in params:
         return fakes.BAD_RESPONSE
     elif 'user_id' not in params:
