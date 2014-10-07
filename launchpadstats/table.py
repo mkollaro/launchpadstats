@@ -35,6 +35,17 @@ CSV_SEPARATOR = '; '
 SKIP_FROM_SUM = ['marks', 'loc']
 
 
+class ReturnUnknownKeyDict(dict):
+    """If a value for the key is not found, return the key."""
+    def __missing__(self, key):
+        return key
+
+# alternative names for things like metrics, to improve readability in results
+PRETTY_NAME = ReturnUnknownKeyDict({
+    'reviews': 'reviews (-2, -1, +1, +2, A)',
+})
+
+
 class Table(object):
     """Base class for the table generators.
 
@@ -130,7 +141,7 @@ class Table(object):
             if metric == 'sum' and not self._show_sum:
                 # don't show the sum if it's not in the data
                 continue
-            row = [self._prettify_metric(metric)]
+            row = [PRETTY_NAME[metric]]
             for item in header:
                 row.append(self._prettify_data(self._data[item], metric))
             result.append(row)
@@ -154,14 +165,6 @@ class Table(object):
                 if metric in self.metrics and metric not in SKIP_FROM_SUM:
                     total += value
             self._data[key]['sum'] = total
-
-    def _prettify_metric(self, metric):
-        """Change the names of some metrics to something more readable.
-        """
-        if metric == 'reviews':
-            return 'reviews (-2, -1, +1, +2, A)'
-        else:
-            return metric
 
     def _prettify_data(self, data, metric):
         """Change some data (e.g. review marks) into something more readable.
