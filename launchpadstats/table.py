@@ -79,9 +79,9 @@ class Table(object):
             'company': company,
             'project_type': project_type,
         }
-        self.people = people.split(',')
-        self.releases = releases.split(',')
-        self.metrics = metrics.split(',')
+        self.people = _split_and_check(people, "people")
+        self.releases = _split_and_check(releases, "releases")
+        self.metrics = _split_and_check(metrics, "metrics")
         self._data = OrderedDict()
         self._data_matrix = list()
 
@@ -253,4 +253,13 @@ def _get_html_table(matrix):
         result += '</td>\n    <td>'.join(row)
         result += '</td>\n</tr>\n'
     result += '</table>'
+    return result
+
+
+def _split_and_check(list_in_string, name):
+    result = [x.strip() for x in list_in_string.split(',')]
+    if not result:
+        raise ConfigurationError("No %s provided" % name)
+    if '' in result:
+        raise ConfigurationError("Empty item in the %s list" % name)
     return result
