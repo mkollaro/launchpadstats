@@ -45,7 +45,8 @@ class ReturnUnknownKeyDict(dict):
 
 # alternative names for things like metrics, to improve readability in results
 PRETTY_NAME = ReturnUnknownKeyDict({
-    'reviews': 'reviews (%s)' % ', '.join(REVIEWS_FORMAT),
+    'reviews': 'reviews (%s)' % ', '.join(['+' + x if x in ['1', '2'] else x
+                                           for x in REVIEWS_FORMAT]),
 })
 
 
