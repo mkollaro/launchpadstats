@@ -28,14 +28,15 @@ from launchpadstats.configuration import ConfigurationError
 
 LOG = logging.getLogger('launchpadstats')
 
-
 # characters used as separator between items in the CSV output
 CSV_SEPARATOR = '; '
-# which metrics should be skipped when a sum is made of the metrics
-SKIP_FROM_SUM = ['marks', 'loc']
-
 # how will the reviews be shown
 REVIEWS_FORMAT = ['-2', '-1', '1', '2', 'A']
+METRICS = set(['loc', 'email_count', 'commit_count', 'drafted_blueprint_count',
+               'completed_blueprint_count', 'filed_bug_count',
+               'resolved_bug_count', 'patch_set_count', 'reviews'])
+# which metrics should be skipped when a sum is made of the metrics
+SKIP_FROM_SUM = ['reviews', 'loc']
 
 
 class ReturnUnknownKeyDict(dict):
@@ -97,6 +98,10 @@ class Table(object):
         self.people = _split_and_check(people, "people")
         self.releases = _split_and_check(releases, "releases")
         self.metrics = _split_and_check(metrics, "metrics")
+        unknown_metrics = set(self.metrics) - METRICS
+        if unknown_metrics:
+            raise ConfigurationError("Metrics '%s' are not supported." %
+                                     unknown_metrics)
         self._data = OrderedDict()
         self._data_matrix = list()
 
@@ -163,11 +168,11 @@ class Table(object):
         The result should be saved in the `self._data[item]['sum']`. It will be
         printed in the CSV representation.
         """
-        for key, metrics in list(self._data.items()):
+        for key in list(self._data.keys()):
             total = 0
-            for metric, value in list(metrics.items()):
-                if metric in self.metrics and metric not in SKIP_FROM_SUM:
-                    total += value
+            for metric in self.metrics:
+                if metric not in SKIP_FROM_SUM:
+                    total += self._data[key][metric]
             self._data[key]['sum'] = total
 
     def _prettify_data(self, data, metric):

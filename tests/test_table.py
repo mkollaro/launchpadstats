@@ -19,6 +19,7 @@ import mock
 from nose.tools import raises, assert_equals
 
 from launchpadstats.table import GroupMetricsTable, PRETTY_NAME, REVIEWS_FORMAT
+from launchpadstats.table import METRICS, SKIP_FROM_SUM
 from launchpadstats.configuration import ConfigurationError
 import fakes
 
@@ -28,7 +29,7 @@ def fake_request(url, params):
     return fakes.GOOD_RESPONSE
 
 
-class TestGroupMetricsTable():
+class TestGroupMetricsTable(object):
     def setup(self):
         self.patch = \
             mock.patch('launchpadstats.table.stackalytics.requests.get',
@@ -47,6 +48,12 @@ class TestGroupMetricsTable():
     def test_partial_query(self):
         table = GroupMetricsTable(people='user1', releases='',
                                   metrics='loc')
+        table.generate()
+
+    @raises(ConfigurationError)
+    def test_unknown_metric(self):
+        table = GroupMetricsTable(people='user1', releases='havana',
+                                  metrics='some-unknown-metric')
         table.generate()
 
     def test_simple_query(self):
@@ -85,11 +92,8 @@ class TestGroupMetricsTable():
                       [table.header_info, 'havana', 'juno', 'icehouse'])
 
     def test_metrics(self):
-        # test all metrics except reviews and the sum
-        metrics = ('loc', 'email_count', 'commit_count',
-                   'drafted_blueprint_count',
-                   'completed_blueprint_count', 'filed_bug_count',
-                   'resolved_bug_count', 'patch_set_count')
+        # test all metrics except reviews and sum
+        metrics = METRICS - set(['reviews'])
         table = GroupMetricsTable(people='user1,user2,user3',
                                   releases='havana', metrics=','.join(metrics))
         table.generate()
@@ -113,6 +117,18 @@ class TestGroupMetricsTable():
         for index, mark in enumerate(REVIEWS_FORMAT):
             assert_equals(reviews[index].strip(),
                           str(fake_response['marks'][mark]))
+
+    def test_sum(self):
+        # compute sum of metrics in a table that contains them all
+        table = GroupMetricsTable(people='user1,user2,user3',
+                                  releases='havana', metrics=','.join(METRICS))
+        table.generate()
+        matrix = table.matrix()
+        assert_equals(matrix[-1][0], 'sum')
+        fake_response = fakes.GOOD_RESPONSE.json()['contribution']
+        tmp_sum = sum([fake_response[x] for x in METRICS
+                       if x not in SKIP_FROM_SUM])
+        assert_equals(matrix[-1][1], str(tmp_sum))
 
 
 def _matrix_size(matrix):
