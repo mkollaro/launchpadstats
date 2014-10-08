@@ -18,8 +18,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 import mock
 from nose.tools import raises, assert_equals
 
-import launchpadstats.tables as tables
-from launchpadstats.configuration import ConfigurationError
+from launchpadstats import common
+from launchpadstats import tables
 import fakes
 
 
@@ -38,18 +38,18 @@ class TestGroupMetricsTable(object):
     def teardown(self):
         self.patch.stop()
 
-    @raises(ConfigurationError)
+    @raises(common.ConfigurationError)
     def test_empty_query(self):
         table = tables.GroupMetricsTable(people='', releases='', metrics='')
         table.generate()
 
-    @raises(ConfigurationError)
+    @raises(common.ConfigurationError)
     def test_partial_query(self):
         table = tables.GroupMetricsTable(people='user1', releases='',
                                          metrics='loc')
         table.generate()
 
-    @raises(ConfigurationError)
+    @raises(common.ConfigurationError)
     def test_unknown_metric(self):
         table = tables.GroupMetricsTable(people='user1', releases='havana',
                                          metrics='some-unknown-metric')
@@ -61,7 +61,7 @@ class TestGroupMetricsTable(object):
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
         expected_result = [
             [table.header_info, 'icehouse'],
-            [tables.PRETTY_NAME['loc'], str(fake_response['loc'])],
+            [common.PRETTY_NAME['loc'], str(fake_response['loc'])],
             ['sum', '0']  # because LOC is in `SKIP_FROM_SUM`
         ]
         table.generate()
@@ -75,7 +75,7 @@ class TestGroupMetricsTable(object):
         fake_loc = str(fakes.GOOD_RESPONSE.json()['contribution']['loc'])
         expected_result = [
             [table.header_info, 'havana', 'icehouse', 'juno'],
-            [tables.PRETTY_NAME['loc'], fake_loc, fake_loc, fake_loc],
+            [common.PRETTY_NAME['loc'], fake_loc, fake_loc, fake_loc],
             ['sum', '0', '0', '0']  # because LOC is in `SKIP_FROM_SUM`
         ]
         table.generate()
@@ -91,7 +91,7 @@ class TestGroupMetricsTable(object):
 
     def test_metrics(self):
         # test all metrics except reviews and sum
-        metrics = tables.METRICS - set(['reviews'])
+        metrics = common.METRICS - set(['reviews'])
         table = tables.GroupMetricsTable(people='user1,user2,user3',
                                          releases='havana',
                                          metrics=','.join(metrics))
@@ -109,11 +109,11 @@ class TestGroupMetricsTable(object):
         table = tables.GroupMetricsTable(people='user1,user2,user3',
                                          releases='havana', metrics='reviews')
         table.generate()
-        assert_equals(table.matrix()[1][0], tables.PRETTY_NAME['reviews'])
+        assert_equals(table.matrix()[1][0], common.PRETTY_NAME['reviews'])
         reviews = table.matrix()[1][1].strip('()').split(',')
-        assert_equals(len(reviews), len(tables.REVIEWS_FORMAT))
+        assert_equals(len(reviews), len(common.REVIEWS_FORMAT))
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
-        for index, mark in enumerate(tables.REVIEWS_FORMAT):
+        for index, mark in enumerate(common.REVIEWS_FORMAT):
             assert_equals(reviews[index].strip(),
                           str(fake_response['marks'][mark]))
 
@@ -121,13 +121,13 @@ class TestGroupMetricsTable(object):
         # compute sum of metrics in a table that contains them all
         table = tables.GroupMetricsTable(people='user1,user2,user3',
                                          releases='havana',
-                                         metrics=','.join(tables.METRICS))
+                                         metrics=','.join(common.METRICS))
         table.generate()
         matrix = table.matrix()
         assert_equals(matrix[-1][0], 'sum')
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
-        tmp_sum = sum([fake_response[x] for x in tables.METRICS
-                       if x not in tables.SKIP_FROM_SUM])
+        tmp_sum = sum([fake_response[x] for x in common.METRICS
+                       if x not in common.SKIP_FROM_SUM])
         assert_equals(matrix[-1][1], str(tmp_sum))
 
 

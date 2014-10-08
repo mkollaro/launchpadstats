@@ -24,31 +24,9 @@ except ImportError:  # Python 2.6
     from odict import odict as OrderedDict
 
 from launchpadstats import stackalytics
-from launchpadstats.common import ConfigurationError
+from launchpadstats import common
 
 LOG = logging.getLogger('launchpadstats')
-
-# characters used as separator between items in the CSV output
-CSV_SEPARATOR = '; '
-# how will the reviews be shown
-REVIEWS_FORMAT = ['-2', '-1', '1', '2', 'A']
-METRICS = set(['loc', 'email_count', 'commit_count', 'drafted_blueprint_count',
-               'completed_blueprint_count', 'filed_bug_count',
-               'resolved_bug_count', 'patch_set_count', 'reviews'])
-# which metrics should be skipped when a sum is made of the metrics
-SKIP_FROM_SUM = ['reviews', 'loc']
-
-
-class ReturnUnknownKeyDict(dict):
-    """If a value for the key is not found, return the key."""
-    def __missing__(self, key):
-        return key
-
-# alternative names for things like metrics, to improve readability in results
-PRETTY_NAME = ReturnUnknownKeyDict({
-    'reviews': 'reviews (%s)' % ', '.join(['+' + x if x in ['1', '2'] else x
-                                           for x in REVIEWS_FORMAT]),
-})
 
 
 class Table(object):
@@ -98,10 +76,10 @@ class Table(object):
         self.people = _split_and_check(people, "people")
         self.releases = _split_and_check(releases, "releases")
         self.metrics = _split_and_check(metrics, "metrics")
-        unknown_metrics = set(self.metrics) - METRICS
+        unknown_metrics = set(self.metrics) - common.METRICS
         if unknown_metrics:
-            raise ConfigurationError("Metrics '%s' are not supported." %
-                                     unknown_metrics)
+            raise common.ConfigurationError("Metrics '%s' are not supported." %
+                                            unknown_metrics)
         self._data = OrderedDict()
         self._data_matrix = list()
 
@@ -120,7 +98,7 @@ class Table(object):
     def matrix(self):
         return self._data_matrix
 
-    def csv(self, delimiter=CSV_SEPARATOR):
+    def csv(self, delimiter=common.CSV_SEPARATOR):
         """Return a string with a CSV representation of the data.
 
         The first item on the top left is going to be the `self.header_info`
@@ -150,7 +128,7 @@ class Table(object):
             if metric == 'sum' and not self._show_sum:
                 # don't show the sum if it's not in the data
                 continue
-            row = [PRETTY_NAME[metric]]
+            row = [common.PRETTY_NAME[metric]]
             for item in header:
                 row.append(self._prettify_data(self._data[item], metric))
             result.append(row)
@@ -171,7 +149,7 @@ class Table(object):
         for key in list(self._data.keys()):
             total = 0
             for metric in self.metrics:
-                if metric not in SKIP_FROM_SUM:
+                if metric not in common.SKIP_FROM_SUM:
                     total += self._data[key][metric]
             self._data[key]['sum'] = total
 
@@ -180,7 +158,7 @@ class Table(object):
         """
         if metric == 'reviews':
             marks = data['marks']
-            result = [str(marks[i]) for i in REVIEWS_FORMAT]
+            result = [str(marks[i]) for i in common.REVIEWS_FORMAT]
             return '(' + ', '.join(result) + ')'
         if metric not in data or data[metric] is None:
             return ''
@@ -270,7 +248,7 @@ def _get_html_table(matrix):
 def _split_and_check(list_in_string, name):
     result = [x.strip() for x in list_in_string.split(',')]
     if not result:
-        raise ConfigurationError("No %s provided" % name)
+        raise common.ConfigurationError("No %s provided" % name)
     if '' in result:
-        raise ConfigurationError("Empty item in the %s list" % name)
+        raise common.ConfigurationError("Empty item in the %s list" % name)
     return result

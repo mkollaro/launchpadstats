@@ -35,6 +35,29 @@ DEFAULTS = OrderedDict([
     ('metrics', 'filed_bug_count,resolved_bug_count'),
 ])
 
+# characters used as separator between items in the CSV output
+CSV_SEPARATOR = '; '
+# how will the reviews be shown
+REVIEWS_FORMAT = ['-2', '-1', '1', '2', 'A']
+METRICS = set(['loc', 'email_count', 'commit_count', 'drafted_blueprint_count',
+               'completed_blueprint_count', 'filed_bug_count',
+               'resolved_bug_count', 'patch_set_count', 'reviews'])
+# which metrics should be skipped when a sum is made of the metrics
+SKIP_FROM_SUM = ['reviews', 'loc']
+
+
+class ReturnUnknownKeyDict(dict):
+    """If a value for the key is not found, return the key."""
+    def __missing__(self, key):
+        return key
+
+
+# alternative names for things like metrics, to improve readability in results
+PRETTY_NAME = ReturnUnknownKeyDict({
+    'reviews': 'reviews (%s)' % ', '.join(['+' + x if x in ['1', '2'] else x
+                                           for x in REVIEWS_FORMAT]),
+})
+
 
 class ConfigurationError(Exception):
     pass
