@@ -20,7 +20,7 @@ import sys
 import traceback
 
 import launchpadstats.configuration
-import launchpadstats.table
+import launchpadstats.tables
 
 
 logging.basicConfig()
@@ -54,7 +54,7 @@ def main():
         for section in config.sections():
             params = dict(config.items(section))
             table_type = params.get('table-type')
-            table = launchpadstats.table.get_table(table_type, params)
+            table = launchpadstats.tables.get_table(table_type, params)
             table.generate()
             header = params.get('description', section)
             print('<h2>%s</h2>' % header)
