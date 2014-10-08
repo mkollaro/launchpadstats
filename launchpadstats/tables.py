@@ -24,7 +24,7 @@ except ImportError:  # Python 2.6
     from odict import odict as OrderedDict
 
 from launchpadstats import stackalytics
-from launchpadstats.configuration import ConfigurationError
+from launchpadstats.common import ConfigurationError
 
 LOG = logging.getLogger('launchpadstats')
 

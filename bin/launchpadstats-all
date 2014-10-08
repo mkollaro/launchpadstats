@@ -19,7 +19,7 @@ import argparse
 import sys
 import traceback
 
-import launchpadstats.configuration
+import launchpadstats.common
 import launchpadstats.tables
 
 
@@ -48,7 +48,7 @@ def main():
     if args['verbose']:
         LOG.setLevel(logging.INFO)
     try:
-        config = launchpadstats.configuration.get_config(args['config'])
+        config = launchpadstats.common.get_config(args['config'])
 
         print('<html>')
         for section in config.sections():

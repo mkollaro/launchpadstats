@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Read the configuration file."""
+"""Common functions, mainly configuration parsing."""
 
 from __future__ import absolute_import, print_function, unicode_literals
 import logging
