@@ -28,6 +28,32 @@ def fake_request(url, params):
     return fakes.GOOD_RESPONSE
 
 
+class TestTable(object):
+    @raises(common.ConfigurationError)
+    def test_empty_query(self):
+        tables.GroupMetricsTable(people='', releases='', metrics='')
+
+    @raises(common.ConfigurationError)
+    def test_no_releases(self):
+        tables.GroupMetricsTable(people='user1', releases='',
+                                 metrics='loc')
+
+    @raises(common.ConfigurationError)
+    def test_no_people(self):
+        tables.GroupMetricsTable(people='', releases='havana',
+                                 metrics='loc')
+
+    @raises(common.ConfigurationError)
+    def test_no_metrics(self):
+        tables.GroupMetricsTable(people='user1', releases='havana',
+                                 metrics='')
+
+    @raises(common.ConfigurationError)
+    def test_unknown_metric(self):
+        tables.GroupMetricsTable(people='user1', releases='havana',
+                                 metrics='some-unknown-metric')
+
+
 class TestGroupMetricsTable(object):
     def setup(self):
         self.patch = \
@@ -37,23 +63,6 @@ class TestGroupMetricsTable(object):
 
     def teardown(self):
         self.patch.stop()
-
-    @raises(common.ConfigurationError)
-    def test_empty_query(self):
-        table = tables.GroupMetricsTable(people='', releases='', metrics='')
-        table.generate()
-
-    @raises(common.ConfigurationError)
-    def test_partial_query(self):
-        table = tables.GroupMetricsTable(people='user1', releases='',
-                                         metrics='loc')
-        table.generate()
-
-    @raises(common.ConfigurationError)
-    def test_unknown_metric(self):
-        table = tables.GroupMetricsTable(people='user1', releases='havana',
-                                         metrics='some-unknown-metric')
-        table.generate()
 
     def test_simple_query(self):
         table = tables.GroupMetricsTable(people='user1', releases='icehouse',
