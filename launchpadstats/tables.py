@@ -246,9 +246,10 @@ def _get_html_table(matrix):
 
 
 def _split_and_check(list_in_string, name):
-    result = [x.strip() for x in list_in_string.split(',')]
-    if not result:
+    if not list_in_string:
         raise common.ConfigurationError("No %s provided" % name)
+
+    result = [x.strip() for x in list_in_string.split(',')]
     if '' in result:
         raise common.ConfigurationError("Empty item in the %s list" % name)
     return result

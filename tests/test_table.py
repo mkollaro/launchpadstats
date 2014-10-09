@@ -31,6 +31,7 @@ def fake_request(url, params):
 class TestTable(object):
     @raises(common.ConfigurationError)
     def test_empty_query(self):
+        tables.GroupMetricsTable(people=None, releases=None, metrics=None)
         tables.GroupMetricsTable(people='', releases='', metrics='')
 
     @raises(common.ConfigurationError)
