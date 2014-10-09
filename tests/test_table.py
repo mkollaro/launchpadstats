@@ -25,6 +25,8 @@ import fakes
 
 def fake_request(url, params):
     """Simulate `requests.get()` on the stackalytics API."""
+    if params['user_id'] == 'unknown_user':
+        return fakes.BAD_RESPONSE
     return fakes.GOOD_RESPONSE
 
 
@@ -146,6 +148,45 @@ class TestGroupMetricsTable(object):
         tmp_sum = sum([fake_response[x] for x in common.METRICS
                        if x not in common.SKIP_FROM_SUM])
         assert_equals(matrix[-1][1], str(tmp_sum))
+
+
+class TestUserMetricsTable(object):
+    def setup(self):
+        self.patch = \
+            mock.patch('launchpadstats.tables.stackalytics.requests.get',
+                       side_effect=fake_request)
+        self.mock_request = self.patch.start()
+
+    def teardown(self):
+        self.patch.stop()
+
+    def test_simple_query(self):
+        table = tables.UserMetricsTable(people='user1,user2,user3',
+                                        releases='havana,icehouse,juno',
+                                        metrics='loc')
+        fake_loc = str(fakes.GOOD_RESPONSE.json()['contribution']['loc'])
+        expected_result = [
+            (table.header_info, common.PRETTY_NAME['loc']),
+            ('user1', fake_loc),
+            ('user2', fake_loc),
+            ('user3', fake_loc),
+        ]
+        table.generate()
+        assert_equals(table.matrix(), expected_result)
+
+    def test_unknown_user(self):
+        table = tables.UserMetricsTable(people='user1,user2,unknown_user',
+                                        releases='havana,icehouse,juno',
+                                        metrics='loc')
+        fake_loc = str(fakes.GOOD_RESPONSE.json()['contribution']['loc'])
+        expected_result = [
+            (table.header_info, common.PRETTY_NAME['loc']),
+            ('user1', fake_loc),
+            ('user2', fake_loc),
+            ('unknown_user', ''),
+        ]
+        table.generate()
+        assert_equals(table.matrix(), expected_result)
 
 
 def _matrix_size(matrix):
