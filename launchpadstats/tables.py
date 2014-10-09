@@ -38,7 +38,7 @@ class Table(object):
                      group-metrics and users in user-metrics. The second level
                      might not be ordered and should be the individual metrics,
                      e.g. 'loc', 'commit_count', etc.
-        `self._data_matrix` is a 2D array (list of lists) that contains the
+        `self._data_matrix` is a 2D array (list of tuples) that contains the
                     same data in their almost final form - to be converted
                     into CSV or HTML
     """
@@ -120,8 +120,8 @@ class Table(object):
         self._add_metrics_sum()
         LOG.info(json.dumps(self._data, indent=4))
         # header (or first collumn if it gets flipped)
-        header = list(self._data.keys())
-        row = [self.header_info] + header
+        header = tuple(self._data.keys())
+        row = (self.header_info,) + header
         result = [row]
         # print data
         for metric in self.metrics + ['sum']:
@@ -131,7 +131,7 @@ class Table(object):
             row = [common.PRETTY_NAME[metric]]
             for item in header:
                 row.append(self._prettify_data(self._data[item], metric))
-            result.append(row)
+            result.append(tuple(row))
 
         if self._flip:
             # transpose the matrix

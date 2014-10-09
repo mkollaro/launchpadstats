@@ -69,9 +69,9 @@ class TestGroupMetricsTable(object):
                                          metrics='loc')
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
         expected_result = [
-            [table.header_info, 'icehouse'],
-            [common.PRETTY_NAME['loc'], str(fake_response['loc'])],
-            ['sum', '0']  # because LOC is in `SKIP_FROM_SUM`
+            (table.header_info, 'icehouse'),
+            (common.PRETTY_NAME['loc'], str(fake_response['loc'])),
+            ('sum', '0')  # because LOC is in `SKIP_FROM_SUM`
         ]
         table.generate()
         matrix = table.matrix()
@@ -83,9 +83,9 @@ class TestGroupMetricsTable(object):
                                          metrics='loc')
         fake_loc = str(fakes.GOOD_RESPONSE.json()['contribution']['loc'])
         expected_result = [
-            [table.header_info, 'havana', 'icehouse', 'juno'],
-            [common.PRETTY_NAME['loc'], fake_loc, fake_loc, fake_loc],
-            ['sum', '0', '0', '0']  # because LOC is in `SKIP_FROM_SUM`
+            (table.header_info, 'havana', 'icehouse', 'juno'),
+            (common.PRETTY_NAME['loc'], fake_loc, fake_loc, fake_loc),
+            ('sum', '0', '0', '0')  # because LOC is in `SKIP_FROM_SUM`
         ]
         table.generate()
         assert_equals(table.matrix(), expected_result)
@@ -96,7 +96,7 @@ class TestGroupMetricsTable(object):
                                          metrics='loc')
         table.generate()
         assert_equals(table.matrix()[0],
-                      [table.header_info, 'havana', 'juno', 'icehouse'])
+                      (table.header_info, 'havana', 'juno', 'icehouse'))
 
     def test_metrics(self):
         # test all metrics except reviews and sum
@@ -107,7 +107,7 @@ class TestGroupMetricsTable(object):
         table.generate()
         matrix = table.matrix()
         assert_equals(_matrix_size(matrix), (len(metrics) + 2, 2))
-        assert_equals(matrix[0], [table.header_info, 'havana'])
+        assert_equals(matrix[0], (table.header_info, 'havana'))
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
         for index, metric in enumerate(metrics):
             assert_equals(matrix[index + 1][0], metric)
