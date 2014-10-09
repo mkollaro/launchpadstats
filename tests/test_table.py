@@ -50,6 +50,13 @@ class TestTable(object):
                                  metrics='')
 
     @raises(common.ConfigurationError)
+    def test_wrong_syntax(self):
+        tables.GroupMetricsTable(people='user1,', releases='havana',
+                                 metrics='loc')
+        tables.GroupMetricsTable(people='user1', releases='havana,,icehouse',
+                                 metrics='loc')
+
+    @raises(common.ConfigurationError)
     def test_unknown_metric(self):
         tables.GroupMetricsTable(people='user1', releases='havana',
                                  metrics='some-unknown-metric')
