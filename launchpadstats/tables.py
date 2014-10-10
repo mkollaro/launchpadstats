@@ -150,13 +150,13 @@ class Table(object):
             total = 0
             for metric in self.metrics:
                 if metric not in common.SKIP_FROM_SUM:
-                    total += self._data[key][metric]
+                    total += self._data[key].get(metric, 0)
             self._data[key]['sum'] = total
 
     def _prettify_data(self, data, metric):
         """Change some data (e.g. review marks) into something more readable.
         """
-        if metric == 'reviews':
+        if metric == 'reviews' and 'marks' in data:
             marks = data['marks']
             result = [str(marks[i]) for i in common.REVIEWS_FORMAT]
             return '(' + ', '.join(result) + ')'
