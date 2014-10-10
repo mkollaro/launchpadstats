@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 import mock
+import requests
 from nose.tools import raises, assert_equals
 
 from launchpadstats import common
@@ -100,6 +101,15 @@ class TestGroupMetricsTable(object):
         table.generate()
         assert_equals(table.matrix(), expected_result)
 
+    @raises(requests.HTTPError)
+    def test_unknown_user(self):
+        # the test is only with one user, because the Stackalytics API will
+        # show the results for all users and ignore the ones that don't exist
+        table = tables.GroupMetricsTable(people='unknown_user',
+                                         releases='havana,icehouse,juno',
+                                         metrics='commit_count')
+        table.generate()
+
     def test_release_order(self):
         table = tables.GroupMetricsTable(people='user1',
                                          releases='havana,juno,icehouse',
@@ -120,7 +130,7 @@ class TestGroupMetricsTable(object):
         assert_equals(matrix[0], (table.header_info, 'havana'))
         fake_response = fakes.GOOD_RESPONSE.json()['contribution']
         for index, metric in enumerate(metrics):
-            assert_equals(matrix[index + 1][0], metric)
+            assert_equals(matrix[index + 1][0], common.PRETTY_NAME[metric])
             assert_equals(matrix[index + 1][1], str(fake_response[metric]))
         assert_equals(matrix[-1][0], 'sum')
 
@@ -187,6 +197,31 @@ class TestUserMetricsTable(object):
         ]
         table.generate()
         assert_equals(table.matrix(), expected_result)
+
+    def test_metrics(self):
+        # test all metrics except reviews
+        metrics = common.METRICS - set(['reviews'])
+        table = tables.UserMetricsTable(people='user1',
+                                        releases='havana',
+                                        metrics=','.join(metrics))
+        table.generate()
+        matrix = table.matrix()
+        assert_equals(_matrix_size(matrix), (2, (len(metrics) + 1)))
+        fake_response = fakes.GOOD_RESPONSE.json()['contribution']
+        for index, metric in enumerate(metrics):
+            assert_equals(matrix[0][index + 1], common.PRETTY_NAME[metric])
+            assert_equals(matrix[1][index + 1], str(fake_response[metric]))
+
+    def test_metrics_with_unknown_user(self):
+        table = tables.UserMetricsTable(people='unknown_user',
+                                        releases='havana',
+                                        metrics=','.join(common.METRICS))
+        table.generate()
+        matrix = table.matrix()
+        assert_equals(_matrix_size(matrix), (2, (len(common.METRICS) + 1)))
+        for index, metric in enumerate(common.METRICS):
+            assert_equals(matrix[0][index + 1], common.PRETTY_NAME[metric])
+            assert_equals(matrix[1][index + 1], '')
 
 
 def _matrix_size(matrix):
