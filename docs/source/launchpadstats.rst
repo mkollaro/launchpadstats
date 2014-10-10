@@ -1,18 +1,10 @@
-Package modules
-===============
+Modules
+=======
 
-:mod:`launchpadstats` Package
------------------------------
-
-.. automodule:: launchpadstats
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`configuration` Module
+:mod:`common` Module
 ---------------------------
 
-.. automodule:: launchpadstats.configuration
+.. automodule:: launchpadstats.common
     :members:
     :undoc-members:
     :show-inheritance:
@@ -25,10 +17,10 @@ Package modules
     :undoc-members:
     :show-inheritance:
 
-:mod:`table` Module
--------------------
+:mod:`tables` Module
+--------------------
 
-.. automodule:: launchpadstats.table
+.. automodule:: launchpadstats.tables
     :members:
     :undoc-members:
     :show-inheritance:
