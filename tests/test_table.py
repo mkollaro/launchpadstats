@@ -76,12 +76,18 @@ class TestTable(object):
 
 class TestGroupMetricsTable(object):
     def setup(self):
-        self.patch = mock.patch('launchpadstats.tables.stackalytics.get_stats',
-                                side_effect=fake_stats)
-        self.mock_stats = self.patch.start()
+        self.patch1 = mock.patch('launchpadstats.tables'
+                                 '.stackalytics.get_stats',
+                                 side_effect=fake_stats)
+        self.patch2 = mock.patch('launchpadstats.tables'
+                                 '.stackalytics.get_registered_users',
+                                 side_effect=fake_users)
+        self.mock_stats = self.patch1.start()
+        self.mock_users = self.patch2.start()
 
     def teardown(self):
-        self.patch.stop()
+        self.patch1.stop()
+        self.patch2.stop()
 
     def test_simple_query(self):
         table = tables.GroupMetricsTable(people='user1', releases='icehouse',
@@ -109,14 +115,28 @@ class TestGroupMetricsTable(object):
         table.generate()
         assert_equals(table.matrix(), expected_result)
 
-    @raises(requests.HTTPError)
-    def test_unknown_user(self):
-        # the test is only with one user, because the Stackalytics API will
-        # show the results for all users and ignore the ones that don't exist
+    @raises(Exception)
+    def test_single_unknown_user(self):
+        # checking for case with only one user that is not registered,
+        # otherwise he just gets ignored
         table = tables.GroupMetricsTable(people='unknown_user',
                                          releases='havana,icehouse,juno',
                                          metrics='commit_count')
         table.generate()
+
+    def test_unknown_user_among_others(self):
+        table = tables.GroupMetricsTable(people='user1,unknown_user,user2',
+                                         releases='icehouse',
+                                         metrics='loc')
+        fake_response = fakes.GOOD_RESPONSE.json()['contribution']
+        expected_result = [
+            (table.header_info, 'icehouse'),
+            (common.PRETTY_NAME['loc'], str(fake_response['loc'])),
+            ('sum', '0')  # because LOC is in `SKIP_FROM_SUM`
+        ]
+        table.generate()
+        matrix = table.matrix()
+        assert_equals(matrix, expected_result)
 
     def test_release_order(self):
         table = tables.GroupMetricsTable(people='user1',

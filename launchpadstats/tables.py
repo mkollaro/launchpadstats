@@ -177,6 +177,11 @@ class GroupMetricsTable(Table):
     _show_sum = True
 
     def generate(self):
+        registered_users = stackalytics.get_registered_users(self.people)
+        if not registered_users:
+            raise Exception("None of the requested users is registered in"
+                            " Launchpad")
+        self._request_params['user_id'] = ','.join(registered_users)
         for release in self.releases:
             self._request_params['release'] = release
             stats = stackalytics.get_stats(self._request_params)
