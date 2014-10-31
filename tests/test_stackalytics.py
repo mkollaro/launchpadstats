@@ -35,7 +35,7 @@ def fake_request(url, params):
         return fakes.BAD_RESPONSE
 
 
-class TestStats():
+class TestStat():
     def setup(self):
         self.patch = mock.patch('launchpadstats.stackalytics.requests.get',
                                 side_effect=fake_request)
@@ -51,6 +51,16 @@ class TestStats():
     @raises(requests.HTTPError)
     def test_bad_response(self):
         launchpadstats.stackalytics.get_stats({'something_bad': ''})
+
+
+class TestUsers():
+    def setup(self):
+        self.patch = mock.patch('launchpadstats.stackalytics.requests.get',
+                                side_effect=fake_request)
+        self.mock_request = self.patch.start()
+
+    def teardown(self):
+        self.patch.stop()
 
     def test_user_exists(self):
         res = launchpadstats.stackalytics.check_users_exist(['known_user1'])
