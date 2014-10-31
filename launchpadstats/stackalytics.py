@@ -14,6 +14,7 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 import requests
+import requests_futures.sessions
 import logging
 
 
@@ -21,9 +22,6 @@ LOG = logging.getLogger('launchpadstats')
 
 
 STACKALYTICS_URL = 'http://stackalytics.com/'
-
-# cache of whether a user is registered in Launchpad/Stackalytics or not
-_USER_CACHE = dict()
 
 
 def get_stats(params):
@@ -45,23 +43,23 @@ def get_stats(params):
 def check_users_exist(user_ids):
     """Check if the users exist in Stackalytics (and therefore in Launchpad).
 
-    TODO: use grequests for async requests to make this faster
-
     :param user_ids: list of user_id items
     :returns: dictionary with user_ids as keys and booleans as values. The user
         is registered in Launchpad/Stackalytics iff `result[user] == True`.
     """
+    session = requests_futures.sessions.FuturesSession()
+    requests = list()
     result = dict()
     for user in user_ids:
-        if user in _USER_CACHE:
-            result[user] = _USER_CACHE[user]
-            continue
-        r = requests.get(STACKALYTICS_URL, params={'user_id': user})
-        LOG.info("Checking %s", r.url)
-        if r.status_code == requests.codes.ok:
+        req = session.get(STACKALYTICS_URL, params={'user_id': user})
+        requests.append(req)
+
+    assert(len(user_ids) == len(requests))
+    for user, req in zip(user_ids, requests):
+        r = req.result()
+        if r.status_code == 200:
             result[user] = True
         else:
             result[user] = False
             LOG.warning("User_id '%s' is not registered in Launchpad", user)
-        _USER_CACHE[user] = result[user]
     return result

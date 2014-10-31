@@ -23,11 +23,10 @@ import launchpadstats.stackalytics
 import fakes
 
 
-def fake_request(url, params):
-    """Simulate `requests.get()` on the stackalytics API."""
-    if 'something_bad' in params:
-        return fakes.BAD_RESPONSE
-    elif 'user_id' not in params:
+def fake_request(method, url, params=None, *args, **kwargs):
+    """Simulate `requests.sessions.Session.request()` on the stackalytics API.
+    """
+    if 'user_id' not in params:
         return fakes.GOOD_RESPONSE
     elif params['user_id'].startswith('known_user'):
         return fakes.GOOD_RESPONSE
@@ -36,27 +35,25 @@ def fake_request(url, params):
 
 
 class TestStat():
-    def setup(self):
-        self.patch = mock.patch('launchpadstats.stackalytics.requests.get',
-                                side_effect=fake_request)
-        self.mock_request = self.patch.start()
-
-    def teardown(self):
-        self.patch.stop()
-
-    def test_empty_params(self):
+    @mock.patch('launchpadstats.stackalytics.requests.get')
+    def test_empty_params(self, fake_request):
+        fake_request.return_value = fakes.GOOD_RESPONSE
         res = launchpadstats.stackalytics.get_stats(dict())
         assert_equals(res, fakes.GOOD_RESPONSE.json())
 
+    @mock.patch('launchpadstats.stackalytics.requests.get')
     @raises(requests.HTTPError)
-    def test_bad_response(self):
+    def test_bad_response(self, fake_request):
+        fake_request.return_value = fakes.BAD_RESPONSE
         launchpadstats.stackalytics.get_stats({'something_bad': ''})
 
 
 class TestUsers():
     def setup(self):
-        self.patch = mock.patch('launchpadstats.stackalytics.requests.get',
-                                side_effect=fake_request)
+        self.patch = \
+            mock.patch('launchpadstats.stackalytics'
+                       '.requests_futures.sessions.Session.request',
+                       side_effect=fake_request)
         self.mock_request = self.patch.start()
 
     def teardown(self):
