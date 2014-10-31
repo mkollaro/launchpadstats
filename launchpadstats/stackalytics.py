@@ -46,7 +46,7 @@ def get_registered_users(user_ids):
     :param user_ids: list of user_id items
     :returns: list of user_ids which are registered in Launchpad/Stackalytics.
     """
-    session = requests_futures.sessions.FuturesSession()
+    session = requests_futures.sessions.FuturesSession(max_workers=10)
     requests = list()
     for user in user_ids:
         req = session.get(STACKALYTICS_URL, params={'user_id': user})
