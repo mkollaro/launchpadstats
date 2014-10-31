@@ -40,26 +40,24 @@ def get_stats(params):
     return r.json()
 
 
-def check_users_exist(user_ids):
-    """Check if the users exist in Stackalytics (and therefore in Launchpad).
+def get_registered_users(user_ids):
+    """Filter users that exist in Stackalytics (and therefore in Launchpad).
 
     :param user_ids: list of user_id items
-    :returns: dictionary with user_ids as keys and booleans as values. The user
-        is registered in Launchpad/Stackalytics iff `result[user] == True`.
+    :returns: list of user_ids which are registered in Launchpad/Stackalytics.
     """
     session = requests_futures.sessions.FuturesSession()
     requests = list()
-    result = dict()
     for user in user_ids:
         req = session.get(STACKALYTICS_URL, params={'user_id': user})
         requests.append(req)
 
     assert(len(user_ids) == len(requests))
+    result = list()
     for user, req in zip(user_ids, requests):
         r = req.result()
         if r.status_code == 200:
-            result[user] = True
+            result.append(user)
         else:
-            result[user] = False
             LOG.warning("User_id '%s' is not registered in Launchpad", user)
     return result

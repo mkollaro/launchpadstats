@@ -32,13 +32,11 @@ def fake_stats(params):
 
 
 def fake_users(user_ids):
-    """Simulate `launchpadstats.stackalytics.check_users_exist()`."""
-    result = dict()
+    """Simulate `launchpadstats.stackalytics.get_registered_users()`."""
+    result = list()
     for user in user_ids:
-        if user.startswith('unknown_user'):
-            result[user] = False
-        else:
-            result[user] = True
+        if not user.startswith('unknown_user'):
+            result.append(user)
     return result
 
 
@@ -176,7 +174,7 @@ class TestUserMetricsTable(object):
                                  '.stackalytics.get_stats',
                                  side_effect=fake_stats)
         self.patch2 = mock.patch('launchpadstats.tables'
-                                 '.stackalytics.check_users_exist',
+                                 '.stackalytics.get_registered_users',
                                  side_effect=fake_users)
         self.mock_stats = self.patch1.start()
         self.mock_users = self.patch2.start()

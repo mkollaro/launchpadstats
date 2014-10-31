@@ -60,18 +60,20 @@ class TestUsers():
         self.patch.stop()
 
     def test_user_exists(self):
-        res = launchpadstats.stackalytics.check_users_exist(['known_user1'])
-        assert_equals(res, {'known_user1': True})
+        users = ['known_user1']
+        res = launchpadstats.stackalytics.get_registered_users(users)
+        assert_equals(res, users)
 
     def test_user_doesnt_exist(self):
-        res = launchpadstats.stackalytics.check_users_exist(['unknown_user1'])
-        assert_equals(res, {'unknown_user1': False})
+        users = ['unknown_user1']
+        res = launchpadstats.stackalytics.get_registered_users(users)
+        assert_equals(res, list())
 
     def test_multiple_users_check(self):
-        res = launchpadstats.stackalytics.check_users_exist(['unknown_user2',
-                                                             'known_user2'])
-        assert_equals(res, {'unknown_user2': False, 'known_user2': True})
+        users = ['unknown_user1', 'known_user2']
+        res = launchpadstats.stackalytics.get_registered_users(users)
+        assert_equals(res, ['known_user2'])
 
     def test_empty_user_list(self):
-        res = launchpadstats.stackalytics.check_users_exist([])
-        assert_equals(res, dict())
+        res = launchpadstats.stackalytics.get_registered_users([])
+        assert_equals(res, list())

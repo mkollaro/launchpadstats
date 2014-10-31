@@ -195,10 +195,10 @@ class UserMetricsTable(Table):
     _flip = True
 
     def generate(self):
-        user_exists = stackalytics.check_users_exist(self.people)
+        registered_users = stackalytics.get_registered_users(self.people)
         for person in self.people:
             self._data[person] = defaultdict(None)
-            if user_exists[person]:
+            if person in registered_users:
                 self._request_params['user_id'] = person
                 r = stackalytics.get_stats(self._request_params)
                 stats = defaultdict(None, r['contribution'])
