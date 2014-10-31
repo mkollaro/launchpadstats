@@ -24,11 +24,22 @@ from launchpadstats import tables
 import fakes
 
 
-def fake_request(url, params):
-    """Simulate `requests.get()` on the stackalytics API."""
-    if params['user_id'] == 'unknown_user':
-        return fakes.BAD_RESPONSE
-    return fakes.GOOD_RESPONSE
+def fake_stats(params):
+    """Simulate `launchpadstats.stackalytics.get_stats()`."""
+    if 'unknown_user' in params['user_id']:
+        raise requests.HTTPError("user not found", response=fakes.BAD_RESPONSE)
+    return fakes.CONTRIBUTION_STATS
+
+
+def fake_users(user_ids):
+    """Simulate `launchpadstats.stackalytics.check_users_exist()`."""
+    result = dict()
+    for user in user_ids:
+        if user.startswith('unknown_user'):
+            result[user] = False
+        else:
+            result[user] = True
+    return result
 
 
 class TestTable(object):
@@ -67,10 +78,9 @@ class TestTable(object):
 
 class TestGroupMetricsTable(object):
     def setup(self):
-        self.patch = \
-            mock.patch('launchpadstats.tables.stackalytics.requests.get',
-                       side_effect=fake_request)
-        self.mock_request = self.patch.start()
+        self.patch = mock.patch('launchpadstats.tables.stackalytics.get_stats',
+                                side_effect=fake_stats)
+        self.mock_stats = self.patch.start()
 
     def teardown(self):
         self.patch.stop()
@@ -162,13 +172,18 @@ class TestGroupMetricsTable(object):
 
 class TestUserMetricsTable(object):
     def setup(self):
-        self.patch = \
-            mock.patch('launchpadstats.tables.stackalytics.requests.get',
-                       side_effect=fake_request)
-        self.mock_request = self.patch.start()
+        self.patch1 = mock.patch('launchpadstats.tables'
+                                 '.stackalytics.get_stats',
+                                 side_effect=fake_stats)
+        self.patch2 = mock.patch('launchpadstats.tables'
+                                 '.stackalytics.check_users_exist',
+                                 side_effect=fake_users)
+        self.mock_stats = self.patch1.start()
+        self.mock_users = self.patch2.start()
 
     def teardown(self):
-        self.patch.stop()
+        self.patch1.stop()
+        self.patch2.stop()
 
     def test_simple_query(self):
         table = tables.UserMetricsTable(people='user1,user2,user3',
