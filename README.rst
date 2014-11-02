@@ -42,7 +42,7 @@ considered a table, except the section *DEFAULT*):
 
 ::
 
-    $ launchpadstats-all > everything.html
+    $ launchpadstats -c ./config.ini -o html > everything.html
 
 
 Configuration
@@ -88,9 +88,8 @@ Other options
    ``http://stackalytics.com/?user_id=username``
 -  option ``releases`` - list of OpenStack releases, in lower case (e.g.
    havana,icehouse,juno,..)
--  option ``description`` - shown in the output of
-   ``launchpadstats-all``, as a header of the table (if not specified,
-   the table name, i.e. section name will be used)
+-  option ``description`` - shown in the output as a header (in html) or
+   comment (in csv) before the table
 
 The options given in the ``DEFAULT`` section can be used as short-cuts
 in other options.

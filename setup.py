@@ -48,7 +48,7 @@ setuptools.setup(
     url='https://github.com/mkollaro/launchpadstats',
     packages=['launchpadstats'],
     license='Apache License, Version 2.0',
-    scripts=['bin/launchpadstats', 'bin/launchpadstats-all'],
+    scripts=['bin/launchpadstats'],
     description='Get Launchpad statistics and create various CSV or HTML'
                 ' tables from them.',
     long_description=long_description,
