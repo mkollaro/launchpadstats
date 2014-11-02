@@ -37,10 +37,11 @@ def parse_args():
     parser.add_argument('-c', '--config', required=True,
                         help="Configuration file, by default use 'config.ini'"
                         " in the project directory.")
-    parser.add_argument('-t', '--table-name', default='DEFAULT',
-                        help="Which section name in the config file to use,"
-                        " the default value is 'DEFAULT'.")
-    parser.add_argument('--output-format', default='csv',
+    parser.add_argument('-t', '--table-name',
+                        help="Which section name in the config file to use. If"
+                        " none is specified, it will use all of them (except"
+                        " the DEFAULT section).")
+    parser.add_argument('-o', '--output-format', default='csv',
                         choices=['csv', 'html'],
                         help="What output format to use. Default is 'csv'.")
     args = vars(parser.parse_args())
@@ -53,21 +54,45 @@ def main():
         LOG.setLevel(logging.INFO)
     try:
         config = launchpadstats.common.get_config(args['config'])
-        params = dict(config.items(args['table_name']))
-        table_type = params.get('table-type')
-
-        table = launchpadstats.tables.get_table(table_type, params)
-        table.generate()
-        if args['output_format'] == 'html':
-            print(table.html())
+        tables = list()
+        if args['table_name']:
+            params = dict(config.items(args['table_name']))
+            table_type = params.get('table-type')
+            tables.append(launchpadstats.tables.get_table(table_type, params))
         else:
-            print(table.csv())
+            for section in config.sections():
+                params = dict(config.items(section))
+                table_type = params.get('table-type')
+                tables.append(launchpadstats.tables.get_table(table_type,
+                                                              params))
+
+        # TODO(mkollaro) to be parallelized
+        for table in tables:
+            table.generate()
+
+        print_tables(tables, args['output_format'])
 
     except Exception as e:
         sys.stderr.write("%s: %s\n" % (type(e).__name__, e))
         if args['verbose']:
             traceback.print_exc()
         sys.exit(1)
+
+
+def print_tables(tables, output_format):
+    if output_format == 'html':
+        print('<html>')
+        for table in tables:
+            if table.description:
+                print('<h2>%s</h2>' % table.description)
+            print(table.html())
+        print('</html>')
+    else:
+        for table in tables:
+            if table.description:
+                print('# ' + table.description)
+            print(table.csv())
+            print()
 
 
 main()
