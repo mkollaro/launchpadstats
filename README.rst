@@ -1,5 +1,7 @@
 LaunchpadStats
 ==============
+.. image:: https://travis-ci.org/mkollaro/launchpadstats.svg?branch=master
+    :target: https://travis-ci.org/mkollaro/launchpadstats
 
 Get the `Launchpad <https://launchpad.net/>`__ statistics trough
 `Stackalytics <http://stackalytics.com/>`__ and create CSV or HTML
